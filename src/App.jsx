@@ -8,8 +8,8 @@ import { useMemo, useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 // ─── Supabase ─────────────────────────────────────────────────────────────
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://abmixefrwcenyzluqlck.supabase.co";
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_z7qo9Jl_q5i3gja00ii4hw_ChhDVMxd";
+const SUPABASE_URL = "https://abmixefrwcenyzluqlck.supabase.co";
+const SUPABASE_KEY = "sb_publishable_z7qo9Jl_q5i3gja00ii4hw_ChhDVMxd";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -82,11 +82,11 @@ function saveState(s) { try { const safe = { ...s }; delete safe.email; delete s
 
 // ─── Styles ───────────────────────────────────────────────────────────────
 const S = {
-  page: { minHeight: "100vh", background: "radial-gradient(circle at top left,#25364f,#0d1524 45%,#05070d)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
+  page: { minHeight: "100vh", background: "radial-gradient(circle at top left,#182235,#07090f 42%,#030407)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
   wrap: { width: "min(1100px, calc(100% - 32px))", margin: "0 auto" },
   card: { background: "rgba(15,23,42,.8)", border: "1px solid rgba(148,163,184,.15)", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,.25)" },
   inp: { width: "100%", boxSizing: "border-box", background: "rgba(2,6,23,.75)", color: "#fff", border: "1px solid rgba(148,163,184,.22)", borderRadius: 14, padding: "14px", fontSize: 16, outline: "none" },
-  btn: { border: 0, borderRadius: 14, padding: "14px 18px", background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", color: "#07111f", fontWeight: 900, cursor: "pointer", fontSize: 15 },
+  btn: { border: 0, borderRadius: 14, padding: "14px 18px", background: "linear-gradient(135deg,#f8fafc,#a3e635)", color: "#020617", fontWeight: 900, cursor: "pointer", fontSize: 15 },
   sec: { border: "1px solid rgba(148,163,184,.2)", borderRadius: 14, padding: "14px 18px", background: "rgba(15,23,42,.72)", color: "#e2e8f0", fontWeight: 700, cursor: "pointer", fontSize: 15 },
 };
 
@@ -620,7 +620,6 @@ export default function App() {
   const [authModal, setAuthModal] = useState(null); // "login" | "signup" | null
   const [user, setUser] = useState(null);
   const [userEmail, setUserEmail] = useState("");
-  const [checkingPayment, setCheckingPayment] = useState(false);
   const [savingPlan, setSavingPlan] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
 
@@ -631,82 +630,19 @@ export default function App() {
     workoutsPerWeek: "3", workoutStyle: "fullBody", trainingPlace: "gym", level: "beginner",
   });
 
-  // Check for existing Supabase session on load and sync paid access from profiles.
+  // Check for existing Supabase session on load
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        const email = session.user.email || "";
-        setUser(session.user);
-        setUserEmail(email);
-        syncPaidAccess(email);
-      }
+      if (session?.user) { setUser(session.user); setUserEmail(session.user.email || ""); }
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        const email = session.user.email || "";
-        setUser(session.user);
-        setUserEmail(email);
-        syncPaidAccess(email);
-      } else {
-        setUser(null);
-        setUserEmail("");
-      }
+      if (session?.user) { setUser(session.user); setUserEmail(session.user.email || ""); }
+      else { setUser(null); setUserEmail(""); }
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  // While on checkout, poll Supabase so PayPal webhook unlocks access automatically after payment.
-  useEffect(() => {
-    if (!userEmail || screen !== "unlock") return;
-    syncPaidAccess(userEmail);
-    const t = setInterval(() => syncPaidAccess(userEmail), 5000);
-    return () => clearInterval(t);
-  }, [userEmail, screen]);
-
   const selPlan = useMemo(() => PLANS.find(p => p.id === selectedTier) || PLANS[1], [selectedTier]);
-
-  function tierRank(t) { return { free: 0, basic: 1, pro: 2, elite: 3 }[t] || 0; }
-
-  async function syncPaidAccess(email = userEmail, opts = {}) {
-    if (!email) return false;
-    setCheckingPayment(true);
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("plan,payment_status")
-        .eq("email", email)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") throw error;
-
-      if (data?.payment_status === "active" && ["basic", "pro", "elite"].includes(data.plan)) {
-        setAccess(prev => tierRank(data.plan) >= tierRank(prev) ? data.plan : prev);
-        setSelTier(data.plan);
-        setUError("");
-        if (opts.goToOnboarding) setScreen("onboarding");
-        return true;
-      }
-
-      if (opts.goToOnboarding) {
-        setUError("We could not find an active payment yet. Sign in with the same email used at PayPal, then try again in a few seconds.");
-      }
-      return false;
-    } catch (err) {
-      if (opts.goToOnboarding) setUError("Could not verify payment right now. Please try again in a few seconds.");
-      return false;
-    } finally {
-      setCheckingPayment(false);
-    }
-  }
-
-  async function activatePaidPlan() {
-    if (!user) {
-      setUError("Create an account or sign in with the same email you used at PayPal, then click Check payment.");
-      setAuthModal("login");
-      return;
-    }
-    await syncPaidAccess(userEmail, { goToOnboarding: true });
-  }
 
   function setVal(k, v) { setForm(f => ({ ...f, [k]: v })); setErrors(e => ({ ...e, [k]: "" })); }
 
@@ -786,7 +722,7 @@ export default function App() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    setUser(null); setUserEmail(""); setAccess("free");
+    setUser(null); setUserEmail("");
   }
 
   function reset() { setPlan(null); setAccess("free"); setScreen("home"); setPlanReady(false); setAgreed(false); try { window.localStorage.removeItem(STORAGE_KEY); } catch { } }
@@ -813,18 +749,18 @@ export default function App() {
         <LaunchBanner />
         <section style={{ textAlign: "center", marginBottom: 40, paddingTop: 12 }}>
           <h1 style={{ fontSize: "clamp(34px,8vw,80px)", lineHeight: 0.93, letterSpacing: -3, margin: "0 auto 20px", maxWidth: 860 }}>
-            Eat better. Look better. Stay consistent.
+            Lose weight without eating like a fitness robot.
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 18, lineHeight: 1.65, maxWidth: 600, margin: "0 auto 30px" }}>
-            A realistic nutrition plan for people who already care about fitness — but want a lifestyle they can actually keep.
+            Real food. Real life. Realistic progress. Built for people who hate boring diets. Results vary by individual.
           </p>
-          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Build My Plan - $27</button>
-          <div style={{ marginTop: 10, color: "#475569", fontSize: 12 }}>Try the free preview first. Upgrade only when you are ready.</div>
+          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Get My Plan - $27</button>
+          <div style={{ marginTop: 10, color: "#475569", fontSize: 12 }}>Or try the free preview below. No credit card needed.</div>
         </section>
 
         {/* Trust strip */}
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px 24px", marginBottom: 40 }}>
-          {["No extreme diets", "High-protein real meals", "Built for consistency", "Flexible around real life", "Not medical advice"].map(t => (
+          {["No extreme diets", "Real food meals", "Built for busy people", "Results vary", "Not medical advice"].map(t => (
             <span key={t} style={{ color: "#64748b", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ color: "#a3e635" }}>✓</span>{t}
             </span>
@@ -834,9 +770,9 @@ export default function App() {
         {/* Who this is for */}
         <div style={{ ...S.card, padding: "22px 26px", marginBottom: 36, background: "rgba(15,23,42,.6)" }}>
           <div style={{ color: "#a3e635", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Who this is for</div>
-          <p style={{ color: "#f8fafc", fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>NutriPlan is for people who want to:</p>
+          <p style={{ color: "#f8fafc", fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>NutriPlan is for people who:</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "8px 24px" }}>
-            {["Get leaner without living on bland diet food", "Stay consistent with meals they actually enjoy", "Use normal American-style foods in smarter portions", "Support training with enough protein and structure", "Build a healthy lifestyle without extremes"].map(item => (
+            {["Feel stuck even though they are trying", "Hate boring diets that never last", "Want simple meals, not complicated recipes", "Want realistic progress, not overnight miracles", "Need structure and guidance, not shame"].map(item => (
               <div key={item} style={{ color: "#cbd5e1", fontSize: 14, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <span style={{ color: "#a3e635", flexShrink: 0, marginTop: 1 }}>-&gt;</span>{item}
               </div>
@@ -863,7 +799,7 @@ export default function App() {
         <LegalFooter onOpen={setLegalModal} />
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
-      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); syncPaidAccess(em); setAuthModal(null); }} />}
+      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); }} />}
     </div>
   );
 
@@ -888,25 +824,18 @@ export default function App() {
             Your payment is processed securely by a trusted third-party checkout provider. NutriPlan does not store your payment details.
           </p>
           <div style={{ height: 1, background: "rgba(148,163,184,.1)", marginBottom: 22 }} />
-          <div style={{ borderRadius: 14, padding: "14px 16px", background: "rgba(59,130,246,.08)", border: "1px solid rgba(147,197,253,.18)", marginBottom: 18 }}>
-            <div style={{ color: "#dbeafe", fontWeight: 800, fontSize: 14, marginBottom: 6 }}>Automatic activation</div>
-            <p style={{ color: "#94a3b8", fontSize: 13, lineHeight: 1.55, margin: 0 }}>
-              After paying, create an account or sign in using the same email you used at PayPal. NutriPlan checks your payment automatically and unlocks your plan.
-            </p>
-          </div>
-          {user ? (
-            <button onClick={activatePaidPlan} style={{ ...S.btn, width: "100%", marginBottom: 12, opacity: checkingPayment ? 0.7 : 1 }} disabled={checkingPayment}>
-              {checkingPayment ? "Checking payment..." : "Check payment and unlock"}
-            </button>
-          ) : (
-            <button onClick={() => setAuthModal("login")} style={{ ...S.btn, width: "100%", marginBottom: 12 }}>Sign in / create account to activate</button>
-          )}
-          <Field label="Admin test code only">
-            <input style={S.inp} value={unlockCode} placeholder="Owner code for testing" onChange={e => { setUCode(e.target.value); setUError(""); }} />
+          <Field label="Which plan did you purchase?">
+            <select style={S.inp} value={selectedTier} onChange={e => setSelTier(e.target.value)}>
+              {PLANS.filter(p => p.id !== "free").map(p => <option key={p.id} value={p.id}>{p.name} - {p.price}</option>)}
+            </select>
+          </Field>
+          <div style={{ height: 14 }} />
+          <Field label="Enter your unlock code">
+            <input style={S.inp} value={unlockCode} placeholder="Your code from the receipt" onChange={e => { setUCode(e.target.value); setUError(""); }} />
           </Field>
           {unlockError && <p style={{ color: "#fca5a5", fontSize: 13, margin: "10px 0 0", lineHeight: 1.5 }}>{unlockError}</p>}
-          <button onClick={unlockWithCode} style={{ ...S.sec, width: "100%", marginTop: 16 }}>Use admin test code</button>
-          <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0" }}>Payment not unlocking? Make sure your PayPal and account email match, or email {SUPPORT_EMAIL}.</p>
+          <button onClick={unlockWithCode} style={{ ...S.btn, width: "100%", marginTop: 16 }}>Unlock my plan</button>
+          <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0" }}>Didn't receive a code? Email {SUPPORT_EMAIL}</p>
         </div>
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
@@ -1169,7 +1098,7 @@ export default function App() {
           <LegalFooter onOpen={setLegalModal} />
         </div>
         <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
-        {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); syncPaidAccess(em); setAuthModal(null); }} />}
+        {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); }} />}
       </div>
     );
   }
