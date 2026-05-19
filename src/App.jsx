@@ -13,6 +13,16 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_P
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const SUPABASE_READY = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_CONFIG_ERROR = { message: "Supabase is not configured. Check Vercel frontend env vars." };
+function disabledSupabaseQuery() {
+  return {
+    select() { return this; },
+    eq() { return this; },
+    ilike() { return this; },
+    limit() { return this; },
+    maybeSingle: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
+    upsert: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
+  };
+}
 const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : {
   auth: {
     getSession: async () => ({ data: { session: null }, error: SUPABASE_CONFIG_ERROR }),
@@ -21,10 +31,7 @@ const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
     signUp: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
     signOut: async () => ({ error: null }),
   },
-  from: () => ({
-    select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }) }) }),
-    upsert: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
-  }),
+  from: () => disabledSupabaseQuery(),
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -668,11 +675,14 @@ export default function App() {
       const { data, error } = await supabase
         .from("profiles")
         .select("plan, payment_status")
-        .eq("email", email)
+        .ilike("email", email)
+        .limit(1)
         .maybeSingle();
 
       if (error) throw error;
-      const activeTier = data?.payment_status === "active" && isPaidTier(data?.plan) ? data.plan : "free";
+      const profilePlan = String(data?.plan || "").trim().toLowerCase();
+      const paymentStatus = String(data?.payment_status || "").trim().toLowerCase();
+      const activeTier = paymentStatus === "active" && isPaidTier(profilePlan) ? profilePlan : "free";
 
       if (!ownerUnlocked) {
         setAccess(activeTier);
