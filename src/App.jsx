@@ -11,7 +11,21 @@ import { createClient } from "@supabase/supabase-js";
 // Uses Vercel frontend env vars only. No service_role key is ever exposed here.
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_READY = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+const SUPABASE_CONFIG_ERROR = { message: "Supabase is not configured. Check Vercel frontend env vars." };
+const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : {
+  auth: {
+    getSession: async () => ({ data: { session: null }, error: SUPABASE_CONFIG_ERROR }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
+    signInWithPassword: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
+    signUp: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
+    signOut: async () => ({ error: null }),
+  },
+  from: () => ({
+    select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }) }) }),
+    upsert: async () => ({ data: null, error: SUPABASE_CONFIG_ERROR }),
+  }),
+};
 
 // ─── Constants ────────────────────────────────────────────────────────────
 const OWNER_CODE = "12/01/2000";
