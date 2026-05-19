@@ -46,10 +46,10 @@ const PAYPAL = {
 };
 
 const PLANS = [
-  { id: "free", name: "Free", price: "$0", badge: "Try it free", desc: "See exactly how NutriPlan works before you commit.", features: ["1 full day of meals", "Preview 2 locked days", "Set your own calories", "No credit card needed"] },
-  { id: "basic", name: "Basic", price: "$12", badge: "Full plan", desc: "Your complete 7-day meal plan, built around your body.", features: ["Full 7-day meal plan", "Smart calorie calculation", "Daily macro targets", "Body-fat estimate"] },
-  { id: "pro", name: "Pro", price: "$27", badge: "Most popular", desc: "Everything in Basic, plus the flexibility to make it stick.", features: ["Everything in Basic", "Swap any meal you dislike", "Food calculator", "All recipes unlocked"], recommended: true },
-  { id: "elite", name: "Elite", price: "$49", badge: "Food + Training", desc: "A complete program: what to eat and how to train.", features: ["Everything in Pro", "Custom weekly workouts", "Gym or home options", "Built around your schedule"], premium: true },
+  { id: "free", name: "Free", price: "$0", badge: "Try it free", desc: "Preview the experience before you commit.", features: ["1 full day of meals", "Preview 2 locked days", "Set your own calories", "No credit card needed"] },
+  { id: "basic", name: "Basic", price: "$12", badge: "Full plan", desc: "A complete 7-day nutrition structure built around your body and goal.", features: ["Full 7-day meal plan", "Smart calorie estimate", "Daily macro targets", "Body-fat estimate"] },
+  { id: "pro", name: "Pro", price: "$27", badge: "Most popular", desc: "The flexible version most people need: full plan, swaps, recipes, and tools.", features: ["Everything in Basic", "Swap meals you dislike", "Food label calculator", "Full recipe instructions"], recommended: true },
+  { id: "elite", name: "Elite", price: "$49", badge: "Food + Training", desc: "Food and training together for people who want structure beyond meals.", features: ["Everything in Pro", "Custom weekly workouts", "Gym or home options", "Built around your schedule"], premium: true },
 ];
 
 const isPaid = (t) => t !== "free";
@@ -904,6 +904,21 @@ export default function App() {
             </div>
           ))}
         </div>
+        <div style={{ ...S.card, padding: "22px 26px", marginTop: 24, background: "rgba(15,23,42,.58)" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Good to know</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+            {[
+              ["No extreme dieting", "NutriPlan uses moderate calorie targets and normal meals. It is built for consistency, not punishment."],
+              ["Estimates, not medical advice", "Calories and macros are practical estimates. Individual needs vary by body, history, training, and health."],
+              ["Real-life flexibility", "Use the plan as a starting point, swap meals when needed, and adjust based on hunger, energy, and progress."],
+            ].map(([title, body]) => (
+              <div key={title}>
+                <h3 style={{ margin: "0 0 6px", fontSize: 16 }}>{title}</h3>
+                <p style={{ margin: 0, color: "#9fb3c8", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
         <LegalFooter onOpen={setLegalModal} />
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
@@ -1142,6 +1157,21 @@ export default function App() {
           <p style={{ color: "#475569", fontSize: 11, lineHeight: 1.55, margin: "0 0 20px", padding: "10px 14px", background: "rgba(15,23,42,.5)", borderRadius: 10, border: "1px solid rgba(148,163,184,.08)" }}>
             Calories and macros are estimates for educational purposes only. Individual needs vary. Consult a qualified professional before making major diet or fitness changes.
           </p>
+          <div style={{ ...S.card, padding: 18, marginBottom: 20, background: "rgba(15,23,42,.58)" }}>
+            <Pill color="#b7d7c2">How to use this</Pill>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, marginTop: 12 }}>
+              {[
+                ["Start with the plan", "Follow the meals closely for a few days so you have a clear baseline."],
+                ["Adjust like a human", "If hunger, energy, or training feels off, adjust portions instead of forcing perfection."],
+                ["Track the trend", "Use weekly progress, not one scale day, to decide whether calories need changing."],
+              ].map(([title, body]) => (
+                <div key={title}>
+                  <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
+                  <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.55, margin: "5px 0 0" }}>{body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
           {plan.tier === "free" && (
             <div style={{ ...S.card, padding: 22, marginBottom: 24, background: "linear-gradient(135deg,rgba(183,215,194,.08),rgba(15,23,42,.8))", border: "1px solid rgba(183,215,194,.3)" }}>
               <Pill>Free preview</Pill>
