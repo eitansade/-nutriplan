@@ -5,7 +5,13 @@
 // DEMO UNLOCK: OWNER_CODE unlocks Elite for testing. Production must verify payment via backend/webhook.
 
 import { useMemo, useState, useEffect } from "react";
-import { supabase } from "./lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+// ─── Supabase ─────────────────────────────────────────────────────────────
+// Uses Vercel frontend env vars only. No service_role key is ever exposed here.
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ─── Constants ────────────────────────────────────────────────────────────
 const OWNER_CODE = "12/01/2000";
