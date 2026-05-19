@@ -627,6 +627,11 @@ function AuthModal({ mode, onClose, onSuccess }) {
         result = await supabase.auth.signUp({ email: email.trim(), password });
       }
       if (result.error) { setError(result.error.message); setLoading(false); return; }
+      if (!isLogin && !result.data.session) {
+        setError("Account created. Check your email to confirm it, then sign in to refresh your access.");
+        setLoading(false);
+        return;
+      }
       onSuccess(result.data.user, email.trim());
     } catch (e) {
       setError("Something went wrong. Please try again.");
@@ -841,6 +846,7 @@ export default function App() {
             {user ? (
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <span style={{ color: "#9fb3c8", fontSize: 12 }}>{userEmail}</span>
+                {isPaid(accessTier) && <Pill color="#dff3e6">{accessTier.charAt(0).toUpperCase() + accessTier.slice(1)} active</Pill>}
                 <button onClick={() => refreshPaymentAccess(user, { showMessage: true })} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13, opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>{checkingAccess ? "Checking..." : "Refresh access"}</button>
                 <button onClick={handleSignOut} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13 }}>Sign out</button>
               </div>
@@ -851,6 +857,15 @@ export default function App() {
           </div>
         </header>
         {accessMsg && <div style={{ borderRadius: 12, padding: "10px 14px", background: accessMsg.includes("active") ? "rgba(183,215,194,.12)" : "rgba(96,165,250,.1)", border: "1px solid " + (accessMsg.includes("active") ? "rgba(183,215,194,.32)" : "rgba(96,165,250,.25)"), marginBottom: 14, fontSize: 13, color: accessMsg.includes("active") ? "#dff3e6" : "#dbeafe" }}>{accessMsg}</div>}
+        {user && isPaid(accessTier) && (
+          <div style={{ borderRadius: 16, padding: "14px 16px", background: "rgba(183,215,194,.1)", border: "1px solid rgba(183,215,194,.28)", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ color: "#dff3e6", fontWeight: 900, fontSize: 14 }}>Your {accessTier.charAt(0).toUpperCase() + accessTier.slice(1)} access is ready.</div>
+              <div style={{ color: "#9fb3c8", fontSize: 12, lineHeight: 1.5 }}>Build or update your plan anytime from this account.</div>
+            </div>
+            <button onClick={() => setScreen("onboarding")} style={{ ...S.btn, padding: "10px 16px", fontSize: 13 }}>Build my plan</button>
+          </div>
+        )}
         <LaunchBanner />
         <section style={{ textAlign: "center", marginBottom: 40, paddingTop: 12 }}>
           <h1 style={{ fontSize: "clamp(34px,8vw,80px)", lineHeight: 0.93, letterSpacing: -3, margin: "0 auto 20px", maxWidth: 860 }}>
