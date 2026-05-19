@@ -2,7 +2,7 @@
 // ATTORNEY REVIEW REQUIRED before full commercial launch.
 // Legal text is placeholder only and has not been reviewed by counsel.
 // Supabase: email+password auth + plan storage integrated.
-// DEMO UNLOCK: OWNER_CODE unlocks Elite for testing. Production must verify payment via backend/webhook.
+// Paid access is verified through Supabase profiles after the PayPal webhook updates payment_status.
 
 import { useMemo, useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -35,7 +35,6 @@ const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────
-const OWNER_CODE = "12/01/2000";
 const STORAGE_KEY = "nutriplan_v7_mvp";
 const SUPPORT_EMAIL = "hello.nutriplan@gmail.com";
 
@@ -53,7 +52,7 @@ const PLANS = [
 ];
 
 const FAQS = [
-  ["What happens after I pay?", "Create or sign in to your NutriPlan account using the same email you use at checkout. PayPal sends the payment to our webhook, your Supabase profile is marked active, and the Refresh access button unlocks your plan."],
+  ["What happens after I pay?", "Create or sign in to your NutriPlan account using the same email you used at PayPal checkout. PayPal sends the payment to our webhook, your Supabase profile is marked active, and the Refresh access button unlocks your plan."],
   ["Is this a strict diet?", "No. NutriPlan is built around normal meals, moderate targets, and practical consistency. It gives structure without asking you to eat perfectly."],
   ["Are the calories exact?", "No food estimate is perfect. Calories and macros are practical estimates to help you make better choices, not medical numbers or a guarantee."],
   ["Can I use this with allergies or medical conditions?", "Only with care and professional guidance. NutriPlan does not screen for allergies, intolerances, pregnancy, eating disorders, diabetes, or medical diets."],
@@ -641,7 +640,7 @@ function AuthModal({ mode, onClose, onSuccess }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900 }}>{isLogin ? "Sign in" : "Create account"}</h2>
-            <p style={{ margin: "5px 0 0", color: "#9fb3c8", fontSize: 13, lineHeight: 1.45 }}>{isLogin ? "Refresh your paid access and saved plan." : "Use this email after checkout so your payment can unlock automatically."}</p>
+            <p style={{ margin: "5px 0 0", color: "#9fb3c8", fontSize: 13, lineHeight: 1.45 }}>{isLogin ? "Refresh your paid access and saved plan." : "Use the same email you used at PayPal checkout so your payment can unlock automatically."}</p>
           </div>
           <button aria-label="Close" onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 26, cursor: "pointer" }}>x</button>
         </div>
@@ -670,8 +669,6 @@ export default function App() {
   const [screen, setScreen] = useState("home");
   const [selectedTier, setSelTier] = useState("pro");
   const [accessTier, setAccess] = useState("free");
-  const [unlockCode, setUCode] = useState("");
-  const [unlockError, setUError] = useState("");
   const [errors, setErrors] = useState({});
   const [openDay, setOpenDay] = useState(0);
   const [plan, setPlan] = useState(null);
@@ -688,7 +685,6 @@ export default function App() {
   const [saveMsg, setSaveMsg] = useState("");
   const [checkingAccess, setCheckingAccess] = useState(false);
   const [accessMsg, setAccessMsg] = useState("");
-  const [ownerUnlocked, setOwnerUnlocked] = useState(false);
 
   const [form, setForm] = useState({
     calories: "2000", gender: "male", age: "30", weight: "75", height: "175", // internal: kg/cm
@@ -700,7 +696,7 @@ export default function App() {
   async function refreshPaymentAccess(currentUser = user, opts = {}) {
     const email = (currentUser?.email || userEmail || "").trim().toLowerCase();
     if (!email) {
-      if (!ownerUnlocked) setAccess("free");
+      setAccess("free");
       if (opts.showMessage) setAccessMsg("Sign in first, then refresh your access after checkout.");
       return "free";
     }
@@ -722,10 +718,8 @@ export default function App() {
       const paymentStatus = String(data?.payment_status || "").trim().toLowerCase();
       const activeTier = paymentStatus === "active" && isPaidTier(profilePlan) ? profilePlan : "free";
 
-      if (!ownerUnlocked) {
-        setAccess(activeTier);
-        if (activeTier !== "free") setSelTier(activeTier);
-      }
+      setAccess(activeTier);
+      if (activeTier !== "free") setSelTier(activeTier);
 
       if (opts.showMessage) {
         setAccessMsg(
@@ -737,7 +731,7 @@ export default function App() {
 
       return activeTier;
     } catch {
-      if (!ownerUnlocked) setAccess("free");
+      setAccess("free");
       if (opts.showMessage) setAccessMsg("Could not refresh access right now. Please try again.");
       return "free";
     } finally {
@@ -752,10 +746,10 @@ export default function App() {
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) { setUser(session.user); setUserEmail(session.user.email || ""); refreshPaymentAccess(session.user); }
-      else { setUser(null); setUserEmail(""); setAccess("free"); setOwnerUnlocked(false); }
+      else { setUser(null); setUserEmail(""); setAccess("free"); }
     });
     return () => subscription.unsubscribe();
-  }, [ownerUnlocked]);
+  }, []);
 
   const selPlan = useMemo(() => PLANS.find(p => p.id === selectedTier) || PLANS[1], [selectedTier]);
 
@@ -763,16 +757,9 @@ export default function App() {
 
   function choosePlan(id) {
     const tier = id === "eliteMonthly" ? "elite" : id;
-    setSelTier(tier); setUCode(""); setUError("");
-    if (tier === "free") { setOwnerUnlocked(false); if (user) refreshPaymentAccess(user); else setAccess("free"); setScreen("onboarding"); }
+    setSelTier(tier);
+    if (tier === "free") { if (user) refreshPaymentAccess(user); else setAccess("free"); setScreen("onboarding"); }
     else setScreen("unlock");
-  }
-
-  function unlockWithCode() {
-    // ADMIN TEST ONLY - OWNER_CODE unlocks Elite for internal testing without payment.
-    // Real customer access is verified from Supabase profiles after the PayPal webhook updates payment_status.
-    if (unlockCode.trim() === OWNER_CODE) { setOwnerUnlocked(true); setAccess("elite"); setSelTier("elite"); setUError(""); setScreen("onboarding"); }
-    else setUError("Invalid admin test code. Customers do not need an unlock code after payment.");
   }
 
   function upgradeFrom() {
@@ -838,10 +825,10 @@ export default function App() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    setUser(null); setUserEmail(""); setAccess("free"); setOwnerUnlocked(false); setAccessMsg("");
+    setUser(null); setUserEmail(""); setAccess("free"); setAccessMsg("");
   }
 
-  function reset() { setPlan(null); setOwnerUnlocked(false); if (user) refreshPaymentAccess(user); else setAccess("free"); setScreen("home"); setPlanReady(false); setAgreed(false); setAccessMsg(""); try { window.localStorage.removeItem(STORAGE_KEY); } catch { } }
+  function reset() { setPlan(null); if (user) refreshPaymentAccess(user); else setAccess("free"); setScreen("home"); setPlanReady(false); setAgreed(false); setAccessMsg(""); try { window.localStorage.removeItem(STORAGE_KEY); } catch { } }
 
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (screen === "home") return (
@@ -978,7 +965,7 @@ export default function App() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 10, marginBottom: 22 }}>
             {[
               ["1", "Pay securely with PayPal"],
-              ["2", "Sign in with your email"],
+              ["2", "Sign in with the same email"],
               ["3", "Refresh access and build your plan"],
             ].map(([num, text]) => (
               <div key={num} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: 12, background: "rgba(15,23,42,.5)" }}>
@@ -990,7 +977,7 @@ export default function App() {
           <div style={{ height: 1, background: "rgba(148,163,184,.1)", marginBottom: 22 }} />
           <div style={{ borderRadius: 14, padding: "14px 16px", background: "rgba(96,165,250,.08)", border: "1px solid rgba(96,165,250,.18)", marginBottom: 16 }}>
             <div style={{ color: "#dbeafe", fontSize: 13, fontWeight: 900, marginBottom: 5 }}>After checkout, sign in and refresh access.</div>
-            <div style={{ color: "#94a3b8", fontSize: 12, lineHeight: 1.55 }}>PayPal updates your Supabase profile through the webhook. No manual unlock code is needed for customers.</div>
+            <div style={{ color: "#94a3b8", fontSize: 12, lineHeight: 1.55 }}>Use the same email you used at PayPal checkout. PayPal updates your Supabase profile through the webhook, then Refresh access unlocks your paid plan automatically.</div>
           </div>
           {user ? (
             <div style={{ display: "grid", gap: 10 }}>
@@ -1004,17 +991,7 @@ export default function App() {
           ) : (
             <button onClick={() => setAuthModal("signup")} style={{ ...S.authBtn, width: "100%", borderRadius: 14, padding: "14px 18px" }}>Create account / log in to activate access</button>
           )}
-          <details style={{ marginTop: 20, borderTop: "1px solid rgba(148,163,184,.1)", paddingTop: 14 }}>
-            <summary style={{ color: "#64748b", fontSize: 12, cursor: "pointer", fontWeight: 800 }}>Admin testing</summary>
-            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <Field label="Admin test code only">
-                <input style={S.inp} value={unlockCode} placeholder="OWNER_CODE for internal testing" onChange={e => { setUCode(e.target.value); setUError(""); }} />
-              </Field>
-              {unlockError && <p style={{ color: "#fca5a5", fontSize: 13, margin: 0, lineHeight: 1.5 }}>{unlockError}</p>}
-              <button onClick={unlockWithCode} style={{ ...S.sec, width: "100%" }}>Admin test unlock</button>
-            </div>
-          </details>
-          <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0" }}>Need help? Email {SUPPORT_EMAIL} with your PayPal receipt.</p>
+          <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0", lineHeight: 1.55 }}>Need help? Email {SUPPORT_EMAIL} with your PayPal receipt and the email you used at checkout.</p>
         </div>
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
