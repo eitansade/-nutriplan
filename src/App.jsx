@@ -310,17 +310,17 @@ const FOODS = {
 
 // ─── Recipes ──────────────────────────────────────────────────────────────
 const RECIPES = [
-  { id: 1, title: "Protein Pancakes", category: "Breakfast", cal: 520, protein: 35, carbs: 65, fat: 12, prepTime: "15 min", desc: "Sweet, high-protein breakfast that feels like a weekend treat.", ingredients: ["Protein pancake mix", "Greek yogurt", "Berries", "1 tbsp maple syrup"], steps: ["Cook pancakes on a nonstick pan over medium heat.", "Let cool slightly, then add Greek yogurt on top.", "Add berries and a small drizzle of maple syrup.", "Serve warm."], img: IMG.pancakes },
-  { id: 2, title: "Breakfast Burrito", category: "Breakfast", cal: 540, protein: 38, carbs: 45, fat: 20, prepTime: "12 min", desc: "A filling American breakfast wrap for busy mornings.", ingredients: ["Eggs", "Turkey sausage", "Large tortilla", "Salsa", "Optional cheese"], steps: ["Scramble the eggs in a pan over medium heat.", "Cook turkey sausage separately until done.", "Add eggs and sausage to the tortilla.", "Add salsa and wrap tightly."], img: IMG.burrito },
-  { id: 3, title: "Greek Yogurt Parfait", category: "Breakfast", cal: 430, protein: 32, carbs: 48, fat: 10, prepTime: "5 min", desc: "Fast, high-protein, sweet breakfast with no cooking.", ingredients: ["Greek yogurt", "Berries", "Granola", "Honey"], steps: ["Add Greek yogurt to a bowl.", "Layer berries on top.", "Add a small handful of granola.", "Drizzle honey if desired."], img: IMG.yogurt },
-  { id: 4, title: "Chipotle-Style Chicken Bowl", category: "Lunch", cal: 720, protein: 58, carbs: 78, fat: 16, prepTime: "20 min", desc: "Takeout-style bowl made smarter and higher protein.", ingredients: ["Chicken breast", "White rice", "Salsa", "Corn", "Lettuce", "Greek yogurt (instead of sour cream)"], steps: ["Season chicken with taco seasoning and cook thoroughly.", "Add rice to a bowl as the base.", "Top with chicken, salsa, corn, and lettuce.", "Use Greek yogurt instead of sour cream."], img: IMG.chicken },
-  { id: 5, title: "Buffalo Chicken Wrap", category: "Lunch", cal: 590, protein: 52, carbs: 48, fat: 18, prepTime: "10 min", desc: "Spicy, satisfying, and easy to eat on the go.", ingredients: ["Chicken breast", "Large tortilla", "Buffalo sauce", "Lettuce", "Light ranch"], steps: ["Slice cooked chicken into strips.", "Toss chicken in buffalo sauce.", "Add lettuce and light ranch to the tortilla.", "Add chicken and wrap tightly."], img: IMG.wrap },
-  { id: 6, title: "Turkey Sandwich Plate", category: "Lunch", cal: 560, protein: 42, carbs: 58, fat: 14, prepTime: "10 min", desc: "Simple lunch that feels normal, not like diet food.", ingredients: ["Turkey breast", "Bread", "Cheese", "Pickles", "Baked chips"], steps: ["Build the sandwich with turkey and cheese.", "Add pickles, mustard, or light sauce.", "Serve with baked chips on the side.", "Keep portions controlled."], img: IMG.turkey },
-  { id: 7, title: "Smash Burger Plate", category: "Dinner", cal: 760, protein: 50, carbs: 65, fat: 32, prepTime: "20 min", desc: "A burger meal that still fits the plan.", ingredients: ["Lean ground beef", "Burger bun", "Potatoes", "Pickles", "Light burger sauce"], steps: ["Smash beef patties flat in a very hot pan.", "Toast the bun until golden.", "Air-fry or bake potatoes until crispy.", "Assemble burger with pickles and light sauce."], img: IMG.burger },
-  { id: 8, title: "Chicken Alfredo Light", category: "Dinner", cal: 740, protein: 60, carbs: 82, fat: 18, prepTime: "25 min", desc: "Creamy pasta without turning it into a calorie bomb.", ingredients: ["Chicken breast", "Pasta", "Light Alfredo sauce", "Broccoli"], steps: ["Cook pasta according to package instructions.", "Grill or pan-cook chicken breast.", "Warm light Alfredo sauce in a separate pan.", "Combine pasta, sauce, and broccoli, then top with chicken."], img: IMG.pasta },
-  { id: 9, title: "Taco Bowl Dinner", category: "Dinner", cal: 700, protein: 48, carbs: 74, fat: 22, prepTime: "20 min", desc: "High-protein dinner with comfort food energy.", ingredients: ["Lean ground beef", "Rice", "Black beans", "Salsa", "Lettuce"], steps: ["Cook beef with taco seasoning until browned.", "Add rice and beans to a bowl.", "Top with beef, salsa, and lettuce.", "Add hot sauce if desired."], img: IMG.tacos },
-  { id: 10, title: "Protein Pudding Snack", category: "Snack", cal: 260, protein: 30, carbs: 24, fat: 5, prepTime: "5 min", desc: "Sweet craving fix with real protein.", ingredients: ["Protein pudding", "Greek yogurt", "Oreo crumbs"], steps: ["Mix protein pudding with Greek yogurt until smooth.", "Pour into a bowl.", "Add crushed Oreo crumbs on top.", "Chill for 10 minutes or eat right away."], img: IMG.pudding },
-  { id: 11, title: "Cottage Cheese Honey Bowl", category: "Snack", cal: 310, protein: 28, carbs: 30, fat: 9, prepTime: "5 min", desc: "High-protein snack that is sweet, easy, and filling.", ingredients: ["Cottage cheese", "Berries", "Honey", "Almonds"], steps: ["Add cottage cheese to a bowl.", "Add berries on top.", "Drizzle with honey.", "Add a few almonds for crunch."], img: IMG.cottage },
+  { id: 1, title: "Protein Pancakes with Berry Yogurt", category: "Breakfast", cal: 520, protein: 35, carbs: 65, fat: 12, prepTime: "15 min", desc: "A weekend-style breakfast that still gives you a strong protein base and real satisfaction.", ingredients: ["1 cup protein pancake mix", "1/2 cup plain Greek yogurt", "1/2 cup berries", "1 tbsp maple syrup", "Nonstick spray or 1 tsp butter"], steps: ["Mix pancake batter according to the package, keeping it thick enough to hold shape.", "Cook small pancakes over medium heat until bubbles form, then flip once.", "Stir Greek yogurt until smooth and spoon it over the pancakes.", "Top with berries and a small drizzle of maple syrup."], note: "Swap berries for banana slices, or use sugar-free syrup if you want a lower-carb version.", img: IMG.pancakes },
+  { id: 2, title: "Busy Morning Breakfast Burrito", category: "Breakfast", cal: 540, protein: 38, carbs: 45, fat: 20, prepTime: "12 min", desc: "A warm, filling wrap you can make before work without feeling like you are eating diet food.", ingredients: ["2 eggs plus 2 egg whites", "2 turkey sausage links", "1 large flour tortilla", "2 tbsp salsa", "Optional: 1/4 cup shredded cheese"], steps: ["Cook turkey sausage until browned, then slice into small pieces.", "Scramble eggs and egg whites over medium heat until just set.", "Warm the tortilla for 10-15 seconds so it folds without tearing.", "Add eggs, sausage, salsa, and optional cheese, then wrap tightly."], note: "Make two at once and refrigerate one for tomorrow. Reheat wrapped in a paper towel.", img: IMG.burrito },
+  { id: 3, title: "Greek Yogurt Crunch Bowl", category: "Breakfast", cal: 430, protein: 32, carbs: 48, fat: 10, prepTime: "5 min", desc: "Fast, creamy, and high-protein with enough crunch to feel like a real breakfast.", ingredients: ["1 cup plain Greek yogurt", "1/2 cup berries", "1/4 cup granola", "1 tsp honey", "Pinch of cinnamon"], steps: ["Add Greek yogurt to a bowl and stir in cinnamon.", "Layer berries over the top so every bite has fruit.", "Sprinkle granola right before eating to keep it crunchy.", "Finish with honey if you want a little sweetness."], note: "Use high-protein yogurt and measure granola; granola is easy to overpour.", img: IMG.yogurt },
+  { id: 4, title: "Chicken Burrito Bowl", category: "Lunch", cal: 720, protein: 58, carbs: 78, fat: 16, prepTime: "20 min", desc: "A takeout-style bowl built around lean protein, rice, salsa, and simple toppings.", ingredients: ["6-7 oz cooked chicken breast", "1 cup cooked white or brown rice", "1/4 cup corn", "1/2 cup shredded lettuce", "3 tbsp salsa", "2 tbsp Greek yogurt"], steps: ["Season chicken with taco seasoning, salt, pepper, and lime if you have it.", "Add warm rice to a bowl as the base.", "Top with sliced chicken, corn, lettuce, and salsa.", "Use Greek yogurt as a creamy topping instead of sour cream."], note: "For meal prep, keep lettuce and salsa separate until eating so the bowl stays fresh.", img: IMG.chicken },
+  { id: 5, title: "Buffalo Chicken Wrap", category: "Lunch", cal: 590, protein: 52, carbs: 48, fat: 18, prepTime: "10 min", desc: "Spicy, creamy, and portable for the days when lunch needs to happen fast.", ingredients: ["6 oz cooked chicken breast", "1 large tortilla", "2 tbsp buffalo sauce", "1 cup romaine or shredded lettuce", "1 tbsp light ranch", "Optional: celery or cucumber slices"], steps: ["Slice or shred cooked chicken.", "Toss chicken with buffalo sauce until evenly coated.", "Spread light ranch on the tortilla, then add lettuce and chicken.", "Fold the sides in first, roll tightly, and slice in half."], note: "Use rotisserie chicken in a pinch; choose mostly breast meat to keep protein high.", img: IMG.wrap },
+  { id: 6, title: "Turkey Sandwich Plate", category: "Lunch", cal: 560, protein: 42, carbs: 58, fat: 14, prepTime: "10 min", desc: "A normal lunch plate that fits a fat-loss plan without feeling strict or weird.", ingredients: ["4 oz deli turkey or roasted turkey breast", "2 slices whole-grain bread", "1 slice cheese", "Pickles, tomato, or lettuce", "1 oz baked chips", "Mustard or light mayo"], steps: ["Build the sandwich with turkey, cheese, and crunchy vegetables.", "Use mustard freely or measure light mayo if you want it creamy.", "Serve with baked chips on the side instead of eating from the bag.", "Add fruit or extra vegetables if you need more volume."], note: "A simple plate like this is useful because it is repeatable, affordable, and easy to track.", img: IMG.turkey },
+  { id: 7, title: "Lean Smash Burger Plate", category: "Dinner", cal: 760, protein: 50, carbs: 65, fat: 32, prepTime: "20 min", desc: "Burger-night energy with measured portions, lean beef, and crispy potatoes.", ingredients: ["6 oz 90/10 lean ground beef", "1 burger bun", "1 medium potato or 1 cup air-fryer potatoes", "Pickles and lettuce", "1 tbsp light burger sauce"], steps: ["Form beef into two thin patties and season both sides.", "Cook in a hot pan, pressing once for a crisp edge.", "Toast the bun and add pickles, lettuce, and light sauce.", "Serve with air-fried or baked potatoes on the side."], note: "If calories are tight, use one patty open-faced and add a bigger salad.", img: IMG.burger },
+  { id: 8, title: "Creamy Chicken Alfredo Light", category: "Dinner", cal: 740, protein: 60, carbs: 82, fat: 18, prepTime: "25 min", desc: "Creamy comfort food with enough protein to feel like dinner, not a cheat meal.", ingredients: ["6-7 oz chicken breast", "2 cups cooked pasta", "1/4 cup light Alfredo sauce", "1 cup broccoli", "Garlic, pepper, and parsley"], steps: ["Cook pasta and broccoli; save a splash of pasta water.", "Season and cook chicken until done, then slice.", "Warm Alfredo sauce with a little pasta water to coat the pasta lightly.", "Combine pasta, broccoli, and sauce, then top with chicken."], note: "The sauce is for flavor, not drowning the bowl. Add garlic and pepper for more taste.", img: IMG.pasta },
+  { id: 9, title: "Weeknight Taco Bowl", category: "Dinner", cal: 700, protein: 48, carbs: 74, fat: 22, prepTime: "20 min", desc: "A flexible dinner bowl for nights when you want something warm, salty, and satisfying.", ingredients: ["5-6 oz lean ground beef or turkey", "1 cup cooked rice", "1/2 cup black beans", "3 tbsp salsa", "Lettuce, hot sauce, and lime"], steps: ["Brown meat in a skillet and season with taco seasoning.", "Add rice and black beans to a bowl.", "Top with meat, salsa, lettuce, and hot sauce.", "Finish with lime juice if you have it."], note: "Swap rice for potatoes or tortillas. Keep the protein portion steady.", img: IMG.tacos },
+  { id: 10, title: "Chocolate Protein Pudding Cup", category: "Snack", cal: 260, protein: 30, carbs: 24, fat: 5, prepTime: "5 min", desc: "A sweet snack for nighttime cravings that still supports your protein goal.", ingredients: ["1 cup protein pudding or high-protein yogurt", "1/4 cup Greek yogurt", "1 crushed Oreo or 2 tbsp cookie crumbs", "Pinch of salt"], steps: ["Mix protein pudding and Greek yogurt until smooth.", "Add a tiny pinch of salt to make the chocolate flavor stronger.", "Top with cookie crumbs instead of mixing them in.", "Chill for 10 minutes if you want it thicker."], note: "This is a craving tool, not a magic food. Portion the topping and enjoy it slowly.", img: IMG.pudding },
+  { id: 11, title: "Cottage Cheese Honey Bowl", category: "Snack", cal: 310, protein: 28, carbs: 30, fat: 9, prepTime: "5 min", desc: "Creamy, sweet, and filling with simple ingredients you can keep in the fridge.", ingredients: ["3/4 cup cottage cheese", "1/2 cup berries", "1 tsp honey", "10 almonds", "Optional: cinnamon"], steps: ["Add cottage cheese to a bowl and smooth the top.", "Add berries and cinnamon.", "Drizzle honey over the fruit.", "Crush or chop almonds for better crunch in every bite."], note: "If texture is not your thing, blend the cottage cheese first for a cheesecake-style bowl.", img: IMG.cottage },
 ];
 
 // ─── RecipeCard ───────────────────────────────────────────────────────────
@@ -379,6 +379,11 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
                 </div>
               ))}
             </div>
+            {recipe.note && (
+              <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 12, background: "rgba(183,215,194,.08)", border: "1px solid rgba(183,215,194,.18)", color: "#dbeafe", fontSize: 13, lineHeight: 1.55 }}>
+                <strong style={{ color: "#b7d7c2" }}>Practical note:</strong> {recipe.note}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -389,6 +394,11 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
 // ─── Calculation helpers ──────────────────────────────────────────────────
 function calcBMR(kg, cm, age, gender) {
   return gender === "female" ? Math.round(10 * kg + 6.25 * cm - 5 * age - 161) : Math.round(10 * kg + 6.25 * cm - 5 * age + 5);
+}
+function mealDistribution(slots) {
+  return slots.length === 3
+    ? { breakfast: 0.28, lunch: 0.38, dinner: 0.34 }
+    : { breakfast: 0.24, lunch: 0.34, dinner: 0.32, snack: 0.1 };
 }
 function calcBFP(waist, neck, height, gender, hip) {
   try {
@@ -419,7 +429,7 @@ function buildMealPlan(tier, form) {
   const minCal = form.gender === "female" ? 1200 : 1500;
   cal = Math.max(minCal, Math.min(5000, cal));
   const slots = Number(form.mealsPerDay) === 3 ? ["breakfast", "lunch", "dinner"] : ["breakfast", "lunch", "dinner", "snack"];
-  const dist = slots.length === 3 ? { breakfast: 0.28, lunch: 0.38, dinner: 0.34 } : { breakfast: 0.24, lunch: 0.34, dinner: 0.32, snack: 0.1 };
+  const dist = mealDistribution(slots);
   const protein = Math.max(Math.round(kg * 1.6), Math.round((cal * 0.28) / 4));
   const fat = Math.round((cal * 0.28) / 9);
   const carbs = Math.max(80, Math.round((cal - protein * 4 - fat * 9) / 4));
@@ -756,13 +766,14 @@ export default function App() {
 
   function swapMeal(dayIdx, slot) {
     if (!plan || !canSwap(plan.tier)) return;
+    const dist = mealDistribution(plan.slots);
     const updated = plan.days.map((d, i) => {
       if (i !== dayIdx) return d;
       const options = FOODS[slot];
       const cur = d.meals[slot];
       const others = options.filter(m => m.title !== cur.title);
       const next = others.length ? others[Math.floor(Math.random() * others.length)] : options[0];
-      return { ...d, meals: { ...d.meals, [slot]: scaleMeal(next, plan.cal / plan.slots.length) } };
+      return { ...d, meals: { ...d.meals, [slot]: scaleMeal(next, plan.cal * (dist[slot] || (1 / plan.slots.length))) } };
     });
     setPlan({ ...plan, days: updated });
   }
@@ -854,6 +865,24 @@ export default function App() {
             {["Feel stuck even though they are trying", "Hate boring diets that never last", "Want simple meals, not complicated recipes", "Want realistic progress, not overnight miracles", "Need structure and guidance, not shame"].map(item => (
               <div key={item} style={{ color: "#cbd5e1", fontSize: 14, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <span style={{ color: "#b7d7c2", flexShrink: 0, marginTop: 1 }}>-&gt;</span>{item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Product value */}
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>What you get inside</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+            {[
+              ["A real 7-day structure", "Meals are organized by day so you know what to eat without starting over every morning."],
+              ["Calories and macros", "Targets are estimated from your body, goal, and activity level, then paired with practical meals."],
+              ["Flexible food swaps", "Pro and Elite let you swap meals when life, cravings, or leftovers change the plan."],
+              ["Recipes that feel normal", "Simple American-friendly meals with ingredients, steps, and practical notes."],
+            ].map(([title, body]) => (
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
+                <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>{title}</h3>
+                <p style={{ margin: 0, color: "#9fb3c8", fontSize: 14, lineHeight: 1.6 }}>{body}</p>
               </div>
             ))}
           </div>
