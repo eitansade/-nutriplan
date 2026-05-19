@@ -201,9 +201,9 @@ function LaunchBanner() {
   return (
     <div style={{ marginTop: 18, marginBottom: 24, borderRadius: 18, padding: "16px 18px", background: "linear-gradient(135deg,rgba(183,215,194,.18),rgba(96,165,250,.12),rgba(251,191,36,.08))", border: "1px solid rgba(183,215,194,.36)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", boxShadow: "0 18px 45px rgba(0,0,0,.22)" }}>
       <div style={{ minWidth: 220, flex: "1 1 260px" }}>
-        <div style={{ fontSize: 12, fontWeight: 900, color: "#dbeafe", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 4 }}>Founding launch offer</div>
-        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>Save 25% while early access is live</div>
-        <div style={{ fontSize: 12, color: "#9fb3c8" }}>Premium nutrition planning for real life. Offer may change anytime.</div>
+        <div style={{ fontSize: 12, fontWeight: 900, color: "#dbeafe", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 4 }}>Founding launch pricing</div>
+        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>Early access rates are live now</div>
+        <div style={{ fontSize: 12, color: "#9fb3c8" }}>Premium nutrition planning for real life. Launch pricing may change anytime.</div>
       </div>
       <div style={{ fontVariantNumeric: "tabular-nums", fontSize: 26, fontWeight: 900, color: "#07111f", letterSpacing: 1, background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{mins}:{secs}</div>
     </div>
@@ -919,12 +919,16 @@ export default function App() {
           ) : (
             <button onClick={() => setAuthModal("signup")} style={{ ...S.authBtn, width: "100%", borderRadius: 14, padding: "14px 18px" }}>Create account / log in to activate access</button>
           )}
-          <div style={{ height: 1, background: "rgba(148,163,184,.1)", margin: "22px 0" }} />
-          <Field label="Admin test code only">
-            <input style={S.inp} value={unlockCode} placeholder="OWNER_CODE for internal testing" onChange={e => { setUCode(e.target.value); setUError(""); }} />
-          </Field>
-          {unlockError && <p style={{ color: "#fca5a5", fontSize: 13, margin: "10px 0 0", lineHeight: 1.5 }}>{unlockError}</p>}
-          <button onClick={unlockWithCode} style={{ ...S.sec, width: "100%", marginTop: 16 }}>Admin test unlock</button>
+          <details style={{ marginTop: 20, borderTop: "1px solid rgba(148,163,184,.1)", paddingTop: 14 }}>
+            <summary style={{ color: "#64748b", fontSize: 12, cursor: "pointer", fontWeight: 800 }}>Admin testing</summary>
+            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+              <Field label="Admin test code only">
+                <input style={S.inp} value={unlockCode} placeholder="OWNER_CODE for internal testing" onChange={e => { setUCode(e.target.value); setUError(""); }} />
+              </Field>
+              {unlockError && <p style={{ color: "#fca5a5", fontSize: 13, margin: 0, lineHeight: 1.5 }}>{unlockError}</p>}
+              <button onClick={unlockWithCode} style={{ ...S.sec, width: "100%" }}>Admin test unlock</button>
+            </div>
+          </details>
           <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0" }}>Need help? Email {SUPPORT_EMAIL} with your PayPal receipt.</p>
         </div>
       </div>
