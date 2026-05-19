@@ -52,6 +52,15 @@ const PLANS = [
   { id: "elite", name: "Elite", price: "$49", badge: "Food + Training", desc: "Food and training together for people who want structure beyond meals.", features: ["Everything in Pro", "Custom weekly workouts", "Gym or home options", "Built around your schedule"], premium: true },
 ];
 
+const FAQS = [
+  ["What happens after I pay?", "Create or sign in to your NutriPlan account using the same email you use at checkout. PayPal sends the payment to our webhook, your Supabase profile is marked active, and the Refresh access button unlocks your plan."],
+  ["Is this a strict diet?", "No. NutriPlan is built around normal meals, moderate targets, and practical consistency. It gives structure without asking you to eat perfectly."],
+  ["Are the calories exact?", "No food estimate is perfect. Calories and macros are practical estimates to help you make better choices, not medical numbers or a guarantee."],
+  ["Can I use this with allergies or medical conditions?", "Only with care and professional guidance. NutriPlan does not screen for allergies, intolerances, pregnancy, eating disorders, diabetes, or medical diets."],
+  ["Do results vary?", "Yes. Results depend on consistency, body size, activity, sleep, stress, health history, and many factors outside the app."],
+  ["Why is there a launch timer?", "It highlights the current founding launch offer. The PayPal checkout price is the source of truth, and launch pricing may change later."],
+];
+
 const isPaid = (t) => t !== "free";
 const PAID_TIERS = ["basic", "pro", "elite"];
 const isPaidTier = (t) => PAID_TIERS.includes(t);
@@ -206,6 +215,22 @@ function LaunchBanner() {
         <div style={{ fontSize: 12, color: "#9fb3c8" }}>Premium nutrition planning for real life. Launch pricing may change anytime.</div>
       </div>
       <div style={{ fontVariantNumeric: "tabular-nums", fontSize: 26, fontWeight: 900, color: "#07111f", letterSpacing: 1, background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{mins}:{secs}</div>
+    </div>
+  );
+}
+
+function FAQSection() {
+  return (
+    <div style={{ marginTop: 28 }}>
+      <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Questions before you start</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
+        {FAQS.map(([question, answer]) => (
+          <details key={question} style={{ ...S.card, padding: "16px 18px", borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
+            <summary style={{ cursor: "pointer", color: "#f8fafc", fontWeight: 900, fontSize: 14 }}>{question}</summary>
+            <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>{answer}</p>
+          </details>
+        ))}
+      </div>
     </div>
   );
 }
@@ -614,7 +639,10 @@ function AuthModal({ mode, onClose, onSuccess }) {
     <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
       <div style={{ ...S.card, width: "100%", maxWidth: 420, padding: 28 }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900 }}>{isLogin ? "Sign in" : "Create account"}</h2>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900 }}>{isLogin ? "Sign in" : "Create account"}</h2>
+            <p style={{ margin: "5px 0 0", color: "#9fb3c8", fontSize: 13, lineHeight: 1.45 }}>{isLogin ? "Refresh your paid access and saved plan." : "Use this email after checkout so your payment can unlock automatically."}</p>
+          </div>
           <button aria-label="Close" onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 26, cursor: "pointer" }}>x</button>
         </div>
         <div style={{ display: "grid", gap: 14 }}>
@@ -919,6 +947,7 @@ export default function App() {
             ))}
           </div>
         </div>
+        <FAQSection />
         <LegalFooter onOpen={setLegalModal} />
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
@@ -946,6 +975,18 @@ export default function App() {
           <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "0 0 22px", lineHeight: 1.55, padding: "10px 14px", background: "rgba(2,6,23,.4)", borderRadius: 10, border: "1px solid rgba(148,163,184,.08)" }}>
             Your payment is processed securely by a trusted third-party checkout provider. NutriPlan does not store your payment details.
           </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 10, marginBottom: 22 }}>
+            {[
+              ["1", "Pay securely with PayPal"],
+              ["2", "Sign in with your email"],
+              ["3", "Refresh access and build your plan"],
+            ].map(([num, text]) => (
+              <div key={num} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: 12, background: "rgba(15,23,42,.5)" }}>
+                <div style={{ width: 26, height: 26, borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(183,215,194,.16)", color: "#dff3e6", fontWeight: 900, marginBottom: 8 }}>{num}</div>
+                <div style={{ color: "#cbd5e1", fontSize: 12, lineHeight: 1.45, fontWeight: 800 }}>{text}</div>
+              </div>
+            ))}
+          </div>
           <div style={{ height: 1, background: "rgba(148,163,184,.1)", marginBottom: 22 }} />
           <div style={{ borderRadius: 14, padding: "14px 16px", background: "rgba(96,165,250,.08)", border: "1px solid rgba(96,165,250,.18)", marginBottom: 16 }}>
             <div style={{ color: "#dbeafe", fontSize: 13, fontWeight: 900, marginBottom: 5 }}>After checkout, sign in and refresh access.</div>
