@@ -92,6 +92,28 @@ const REAL_FOOD_EXAMPLES = [
   "Turkey burgers with caramelized onions and oven fries",
 ];
 
+const MICRO_TRUST = [
+  ["Built for normal weeks", "Work, training, cravings, restaurants, and tired nights are part of the plan, not reasons to quit."],
+  ["No miracle claims", "NutriPlan gives practical estimates and structure. Your results depend on consistency, health, sleep, stress, and life."],
+  ["Food you recognize", "Meals are built around eggs, chicken, rice, potatoes, yogurt, pasta, salmon, tacos, burgers, and simple groceries."],
+  ["You stay in control", "Use the plan as a guide, adjust portions, and consult a professional when your health situation needs it."],
+];
+
+const DAILY_SUPPORT = [
+  ["Today's habit", "Pick one simple win: protein at breakfast, a 10-minute walk, water with lunch, or planning dinner before you are starving."],
+  ["Weekly check-in", "Look at the trend, not one perfect day. Energy, hunger, workouts, sleep, and consistency all matter."],
+  ["Streak mindset", "A missed meal does not restart the week. The next choice is where consistency is rebuilt."],
+];
+
+const GROWTH_PATHS = [
+  "Recipe ebooks",
+  "Premium seasonal meal plans",
+  "Simple habit tracker",
+  "Meal-prep partnerships",
+  "Fitness creator collaborations",
+  "Healthy restaurant guides",
+];
+
 const isPaid = (t) => t !== "free";
 const PAID_TIERS = ["basic", "pro", "elite"];
 const isPaidTier = (t) => PAID_TIERS.includes(t);
@@ -1005,6 +1027,36 @@ export default function App() {
           </p>
         </div>
 
+        {/* Micro trust */}
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Small reasons this feels different</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+            {MICRO_TRUST.map(([title, body]) => (
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(15,23,42,.56)" }}>
+                <h3 style={{ margin: "0 0 8px", fontSize: 16 }}>{title}</h3>
+                <p style={{ margin: 0, color: "#9fb3c8", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Retention psychology */}
+        <div style={{ ...S.card, padding: "24px 26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(183,215,194,.08),rgba(15,23,42,.68))" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Built for the day after you buy</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(23px,4vw,32px)", letterSpacing: -1, lineHeight: 1.1 }}>Progress is easier when the next step is small.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 15, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 800 }}>
+            NutriPlan is designed to feel supportive after checkout too: simple habits, weekly check-ins, realistic meals, and reminders that one imperfect meal does not ruin the week.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
+            {DAILY_SUPPORT.map(([title, body]) => (
+              <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(2,6,23,.35)" }}>
+                <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
+                <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.55, margin: "6px 0 0" }}>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Plan cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 14 }}>
           {PLANS.map(p => (
@@ -1037,6 +1089,15 @@ export default function App() {
           </div>
         </div>
         <FAQSection />
+        <div style={{ ...S.card, padding: "22px 26px", marginTop: 28, background: "rgba(15,23,42,.52)" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Where NutriPlan can grow next</div>
+          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.65, margin: "0 0 14px", maxWidth: 780 }}>
+            This is the foundation for a bigger wellness ecosystem: recipes, check-ins, seasonal plans, creator partnerships, and simple tools that make healthy living easier over time.
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {GROWTH_PATHS.map(item => <Pill key={item}>{item}</Pill>)}
+          </div>
+        </div>
         <div style={{ textAlign: "center", marginTop: 36, padding: "30px 20px", borderRadius: 24, background: "linear-gradient(135deg,rgba(183,215,194,.12),rgba(96,165,250,.09))", border: "1px solid rgba(183,215,194,.22)" }}>
           <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Ready to stop guessing?</div>
           <h2 style={{ margin: "0 auto 12px", maxWidth: 720, fontSize: "clamp(26px,5vw,44px)", letterSpacing: -1.5, lineHeight: 1.05 }}>Build a plan that fits your real life.</h2>
