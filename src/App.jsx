@@ -1027,7 +1027,7 @@ export default function App() {
       const payload = { user_id: user.id, tier: accessTier, form_data: form, plan_summary: { cal: plan.cal, protein: plan.protein, carbs: plan.carbs, fat: plan.fat }, updated_at: new Date().toISOString() };
       const { error } = await supabase.from("plans").upsert(payload, { onConflict: "user_id" });
       if (error) { setSaveMsg("Could not save. Please try again."); }
-      else { setSaveMsg("Plan saved to your account!"); }
+      else { setSaveMsg("Plan saved to your account. Email delivery is not enabled yet."); }
     } catch { setSaveMsg("Could not save. Please try again."); }
     setSavingPlan(false);
     setTimeout(() => setSaveMsg(""), 4000);
@@ -1552,17 +1552,22 @@ export default function App() {
               {user ? (
                 <>
                   <span style={{ color: "#64748b", fontSize: 12 }}>{userEmail}</span>
-                  <button onClick={savePlanToSupabase} style={{ ...S.btn, padding: "8px 16px", fontSize: 13, opacity: savingPlan ? 0.7 : 1 }} disabled={savingPlan}>
-                    {savingPlan ? "Saving..." : "Save plan"}
+                  <button onClick={savePlanToSupabase} style={{ ...S.btn, padding: "8px 16px", fontSize: 13, opacity: savingPlan ? 0.7 : 1 }} disabled={savingPlan} title="Save this plan to your NutriPlan account. Email delivery is not enabled yet.">
+                    {savingPlan ? "Saving..." : "Save to account"}
                   </button>
                 </>
               ) : (
-                <button onClick={() => setAuthModal("signup")} style={{ ...S.sec, padding: "8px 16px", fontSize: 13 }}>Save plan</button>
+                <button onClick={() => setAuthModal("signup")} style={{ ...S.sec, padding: "8px 16px", fontSize: 13 }}>Save to account</button>
               )}
             </div>
           </div>
           {saveMsg && <div style={{ borderRadius: 12, padding: "10px 16px", background: saveMsg.includes("saved") ? "rgba(183,215,194,.1)" : "rgba(248,113,113,.1)", border: "1px solid " + (saveMsg.includes("saved") ? "rgba(183,215,194,.3)" : "rgba(248,113,113,.3)"), marginBottom: 14, fontSize: 13, color: saveMsg.includes("saved") ? "#dff3e6" : "#fca5a5" }}>{saveMsg}</div>}
-          <LaunchBanner />
+          {!isPaid(plan.tier) && <LaunchBanner />}
+          {user && isPaid(plan.tier) && (
+            <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(183,215,194,.08)", border: "1px solid rgba(183,215,194,.22)", marginBottom: 16, color: "#dff3e6", fontSize: 13, lineHeight: 1.55 }}>
+              Your paid access is active, so checkout offers are hidden here. Use this page to build, edit, and save your plan.
+            </div>
+          )}
           <div style={{ marginTop: 16, marginBottom: 18 }}>
             <Pill color="#b7d7c2">{plan.tier.charAt(0).toUpperCase() + plan.tier.slice(1)} plan</Pill>
             <h1 style={{ fontSize: "clamp(30px,6vw,48px)", letterSpacing: -2, margin: "14px 0 6px", lineHeight: 1.05 }}>Your plan for real life.</h1>
