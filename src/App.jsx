@@ -36,6 +36,7 @@ const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
 
 // ─── Constants ────────────────────────────────────────────────────────────
 const STORAGE_KEY = "nutriplan_v7_mvp";
+const LAUNCH_TIMER_KEY = STORAGE_KEY + "_launch_deadline";
 const SUPPORT_EMAIL = "hello.nutriplan@gmail.com";
 
 const PAYPAL = {
@@ -53,11 +54,12 @@ const PLANS = [
 
 const FAQS = [
   ["What happens after I pay?", "Create or sign in to your NutriPlan account using the same email you used at PayPal checkout. PayPal sends the payment to our webhook, your Supabase profile is marked active, and the Refresh access button unlocks your plan."],
+  ["Is this a monthly subscription?", "Not right now. These are founding launch prices for digital access through the PayPal checkout links shown on this page. If subscriptions are added later, the checkout will say that clearly before you pay."],
   ["Is this a strict diet?", "No. NutriPlan is built around normal meals, moderate targets, and practical consistency. It gives structure without asking you to eat perfectly."],
   ["Are the calories exact?", "No food estimate is perfect. Calories and macros are practical estimates to help you make better choices, not medical numbers or a guarantee."],
   ["Can I use this with allergies or medical conditions?", "Only with care and professional guidance. NutriPlan does not screen for allergies, intolerances, pregnancy, eating disorders, diabetes, or medical diets."],
   ["Do results vary?", "Yes. Results depend on consistency, body size, activity, sleep, stress, health history, and many factors outside the app."],
-  ["Why is there a launch timer?", "It highlights the current founding launch offer. The PayPal checkout price is the source of truth, and launch pricing may change later."],
+  ["Why is there a launch timer?", "It highlights the current founding launch offer for this visit. It does not secretly change your checkout. The PayPal checkout price is always the source of truth before you pay."],
 ];
 
 const isPaid = (t) => t !== "free";
@@ -111,6 +113,15 @@ const cmToInches = (cm) => Math.round((cm / 2.54) * 10) / 10;
 // ─── Storage ──────────────────────────────────────────────────────────────
 function loadState() { try { const r = window.localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
 function saveState(s) { try { const safe = { ...s }; delete safe.email; delete safe.password; window.localStorage.setItem(STORAGE_KEY, JSON.stringify(safe)); } catch { } }
+function getLaunchDeadline() {
+  const fallback = Date.now() + 15 * 60 * 1000;
+  try {
+    const stored = Number(window.localStorage.getItem(LAUNCH_TIMER_KEY));
+    if (stored && stored > Date.now()) return stored;
+    window.localStorage.setItem(LAUNCH_TIMER_KEY, String(fallback));
+  } catch { }
+  return fallback;
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────
 const S = {
@@ -197,23 +208,24 @@ function SliderField({ label, error, value, onChange, min, max, step = 1, unit, 
 }
 
 function LaunchBanner() {
-  const [secsLeft, setSecsLeft] = useState(900);
+  const [deadline] = useState(getLaunchDeadline);
+  const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    if (secsLeft <= 0) return;
-    const t = setTimeout(() => setSecsLeft(s => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [secsLeft]);
-  if (secsLeft <= 0) return null;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const secsLeft = Math.max(0, Math.ceil((deadline - now) / 1000));
+  const expired = secsLeft <= 0;
   const mins = String(Math.floor(secsLeft / 60)).padStart(2, "0");
   const secs = String(secsLeft % 60).padStart(2, "0");
   return (
     <div style={{ marginTop: 18, marginBottom: 24, borderRadius: 18, padding: "16px 18px", background: "linear-gradient(135deg,rgba(183,215,194,.18),rgba(96,165,250,.12),rgba(251,191,36,.08))", border: "1px solid rgba(183,215,194,.36)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", boxShadow: "0 18px 45px rgba(0,0,0,.22)" }}>
       <div style={{ minWidth: 220, flex: "1 1 260px" }}>
         <div style={{ fontSize: 12, fontWeight: 900, color: "#dbeafe", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 4 }}>Founding launch pricing</div>
-        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>Early access rates are live now</div>
-        <div style={{ fontSize: 12, color: "#9fb3c8" }}>Premium nutrition planning for real life. Launch pricing may change anytime.</div>
+        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>{expired ? "Founding rates are still shown below" : "Early access rates are live now"}</div>
+        <div style={{ fontSize: 12, color: "#9fb3c8" }}>{expired ? "PayPal checkout shows the final price before you pay." : "Your visit timer stays consistent. Checkout price is always final before payment."}</div>
       </div>
-      <div style={{ fontVariantNumeric: "tabular-nums", fontSize: 26, fontWeight: 900, color: "#07111f", letterSpacing: 1, background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{mins}:{secs}</div>
+      <div style={{ fontVariantNumeric: "tabular-nums", fontSize: expired ? 17 : 26, fontWeight: 900, color: "#07111f", letterSpacing: expired ? 0 : 1, background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{expired ? "Check price" : mins + ":" + secs}</div>
     </div>
   );
 }
