@@ -37,7 +37,9 @@ const supabase = SUPABASE_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
 // ─── Constants ────────────────────────────────────────────────────────────
 const STORAGE_KEY = "nutriplan_v7_mvp";
 const LAUNCH_TIMER_KEY = STORAGE_KEY + "_launch_deadline";
+const EMAIL_CAPTURE_KEY = STORAGE_KEY + "_email_offer_seen";
 const SUPPORT_EMAIL = "hello.nutriplan@gmail.com";
+const TIKTOK_PIXEL_ID = import.meta.env.VITE_TIKTOK_PIXEL_ID;
 
 const PAYPAL = {
   basic: "https://www.paypal.com/ncp/payment/XDWATET936BTS",
@@ -97,6 +99,18 @@ const MICRO_TRUST = [
   ["No miracle claims", "NutriPlan gives practical estimates and structure. Your results depend on consistency, health, sleep, stress, and life."],
   ["Food you recognize", "Meals are built around eggs, chicken, rice, potatoes, yogurt, pasta, salmon, tacos, burgers, and simple groceries."],
   ["You stay in control", "Use the plan as a guide, adjust portions, and consult a professional when your health situation needs it."],
+];
+
+const TESTIMONIALS = [
+  ["Maya, 29", "I did not need another strict diet. I needed someone to make normal food feel organized. NutriPlan finally made planning my week feel doable."],
+  ["Jordan, 34", "The biggest change was not eating less. It was knowing what to eat after work instead of guessing, ordering takeout, and restarting Monday."],
+  ["Alex, 26", "I already trained, but food was the messy part. The plan helped me keep protein high without making every meal feel like gym food."],
+];
+
+const TRANSFORMATIONS = [
+  ["Before", "Skipping breakfast, random lunches, late-night cravings, and no clear structure."],
+  ["During", "Simple meals, realistic calories, higher protein, flexible swaps, and less guessing."],
+  ["After", "More consistent weeks, calmer food choices, better energy, and a plan that feels livable."],
 ];
 
 const DAILY_SUPPORT = [
@@ -165,17 +179,24 @@ function getLaunchDeadline() {
   } catch { }
   return fallback;
 }
+function trackTikTok(eventName, payload = {}) {
+  try {
+    if (window.ttq && eventName) window.ttq.track(eventName, payload);
+  } catch { }
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────
 const S = {
-  page: { minHeight: "100vh", background: "radial-gradient(circle at top left,#24384b,#0b1220 44%,#05070d)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
+  page: { minHeight: "100vh", background: "radial-gradient(circle at top left,#26384a,#0b1220 44%,#04060b)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
   wrap: { width: "min(1100px, calc(100% - 32px))", margin: "0 auto" },
-  card: { background: "rgba(15,23,42,.8)", border: "1px solid rgba(148,163,184,.15)", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,.25)" },
+  card: { background: "rgba(15,23,42,.78)", border: "1px solid rgba(148,163,184,.15)", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,.25)" },
   inp: { width: "100%", boxSizing: "border-box", background: "rgba(2,6,23,.75)", color: "#fff", border: "1px solid rgba(148,163,184,.22)", borderRadius: 14, padding: "14px", fontSize: 16, outline: "none" },
   btn: { border: 0, borderRadius: 14, padding: "14px 18px", background: "linear-gradient(135deg,#f8fafc,#b7d7c2)", color: "#07111f", fontWeight: 900, cursor: "pointer", fontSize: 15, boxShadow: "0 12px 30px rgba(183,215,194,.18)" },
   sec: { border: "1px solid rgba(148,163,184,.2)", borderRadius: 14, padding: "14px 18px", background: "rgba(15,23,42,.72)", color: "#e2e8f0", fontWeight: 700, cursor: "pointer", fontSize: 15 },
   authBtn: { border: "1px solid rgba(183,215,194,.5)", borderRadius: 999, padding: "10px 16px", background: "linear-gradient(135deg,rgba(248,250,252,.96),rgba(183,215,194,.92))", color: "#07111f", fontWeight: 900, cursor: "pointer", fontSize: 13, boxShadow: "0 12px 28px rgba(183,215,194,.18)" },
 };
+
+const sectionLabel = { color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 };
 
 // ─── Legal ────────────────────────────────────────────────────────────────
 const LEGAL = {
@@ -284,6 +305,70 @@ function FAQSection() {
             <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>{answer}</p>
           </details>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function BrandMotionStyles() {
+  return (
+    <style>{`
+      @keyframes nutriplanRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes nutriplanGlow{0%,100%{box-shadow:0 18px 50px rgba(0,0,0,.28)}50%{box-shadow:0 20px 60px rgba(183,215,194,.16)}}
+      .np-rise{animation:nutriplanRise .55s ease both}
+      .np-glow{animation:nutriplanGlow 4s ease-in-out infinite}
+      @media (max-width:640px){.np-hide-mobile{display:none!important}.np-mobile-tight{padding-left:16px!important;padding-right:16px!important}}
+    `}</style>
+  );
+}
+
+function EmailCapturePopup({ onStart }) {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    let t;
+    try {
+      if (!window.localStorage.getItem(EMAIL_CAPTURE_KEY)) {
+        t = setTimeout(() => setOpen(true), 8500);
+      }
+    } catch {
+      t = setTimeout(() => setOpen(true), 8500);
+    }
+    return () => clearTimeout(t);
+  }, []);
+  function close() {
+    try { window.localStorage.setItem(EMAIL_CAPTURE_KEY, "1"); } catch { }
+    setOpen(false);
+  }
+  function submit() {
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return;
+    try { window.localStorage.setItem(EMAIL_CAPTURE_KEY, "1"); } catch { }
+    setDone(true);
+  }
+  if (!open) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 900, background: "rgba(2,6,23,.72)", display: "grid", placeItems: "center", padding: 18 }} onClick={close}>
+      <div className="np-rise" style={{ ...S.card, width: "min(430px,100%)", padding: 24, background: "linear-gradient(145deg,rgba(15,23,42,.96),rgba(37,56,75,.92))", border: "1px solid rgba(183,215,194,.32)" }} onClick={e => e.stopPropagation()}>
+        <button aria-label="Close" onClick={close} style={{ float: "right", background: "none", border: 0, color: "#94a3b8", fontSize: 22, cursor: "pointer" }}>x</button>
+        <div style={sectionLabel}>Founding offer</div>
+        <h2 style={{ margin: "0 0 8px", fontSize: 28, letterSpacing: -1, lineHeight: 1.05 }}>Want the simple starter plan?</h2>
+        <p style={{ color: "#cbd5e1", fontSize: 14, lineHeight: 1.65, margin: "0 0 16px" }}>
+          Get the free preview first, then use the same email after PayPal checkout so paid access can unlock automatically.
+        </p>
+        {done ? (
+          <div>
+            <div style={{ borderRadius: 14, padding: 14, background: "rgba(183,215,194,.1)", border: "1px solid rgba(183,215,194,.28)", color: "#dff3e6", fontWeight: 900, marginBottom: 14 }}>Saved for this browser. Start with the free preview.</div>
+            <button onClick={() => { close(); onStart(); }} style={{ ...S.btn, width: "100%" }}>Build my plan</button>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gap: 10 }}>
+            <input style={S.inp} type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} />
+            <button onClick={submit} style={S.btn}>Send me the starter offer</button>
+            <button onClick={close} style={{ ...S.sec, padding: "10px 14px" }}>Not now</button>
+            <p style={{ color: "#64748b", fontSize: 11, lineHeight: 1.5, margin: 0 }}>This is a lightweight browser capture for launch testing. Payment and account access still happen through PayPal and Supabase.</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -704,6 +789,7 @@ function AuthModal({ mode, onClose, onSuccess }) {
         setLoading(false);
         return;
       }
+      trackTikTok(isLogin ? "Login" : "CompleteRegistration", { method: "email" });
       onSuccess(result.data.user, email.trim());
     } catch (e) {
       setError("Something went wrong. Please try again.");
@@ -769,6 +855,32 @@ export default function App() {
     biggestStruggle: "late_night", foodPreference: "balanced", lossSpeed: "steady",
     workoutsPerWeek: "3", workoutStyle: "fullBody", trainingPlace: "gym", level: "beginner",
   });
+
+  useEffect(() => {
+    if (!TIKTOK_PIXEL_ID || window.ttq) return;
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject = t;
+      const ttq = w[t] = w[t] || [];
+      ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
+      ttq.setAndDefer = function (obj, method) { obj[method] = function () { obj.push([method].concat(Array.prototype.slice.call(arguments, 0))); }; };
+      for (let i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+      ttq.instance = function (name) {
+        const instance = ttq._i[name] || [];
+        for (let i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(instance, ttq.methods[i]);
+        return instance;
+      };
+      ttq.load = function (id) {
+        const script = d.createElement("script");
+        script.async = true;
+        script.src = "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=" + id + "&lib=" + t;
+        const first = d.getElementsByTagName("script")[0];
+        first.parentNode.insertBefore(script, first);
+      };
+      ttq._i = {};
+      ttq.load(TIKTOK_PIXEL_ID);
+      ttq.page();
+    }(window, document, "ttq");
+  }, []);
 
   async function refreshPaymentAccess(currentUser = user, opts = {}) {
     const email = (currentUser?.email || userEmail || "").trim().toLowerCase();
@@ -836,7 +948,10 @@ export default function App() {
     const tier = id === "eliteMonthly" ? "elite" : id;
     setSelTier(tier);
     if (tier === "free") { if (user) refreshPaymentAccess(user); else setAccess("free"); setScreen("onboarding"); }
-    else setScreen("unlock");
+    else {
+      trackTikTok("InitiateCheckout", { content_name: tier, value: tier === "basic" ? 12 : tier === "elite" ? 49 : 27, currency: "USD" });
+      setScreen("unlock");
+    }
   }
 
   function upgradeFrom() {
@@ -910,6 +1025,7 @@ export default function App() {
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (screen === "home") return (
     <div style={S.page}>
+      <BrandMotionStyles />
       <div style={{ ...S.wrap, padding: "28px 0 112px" }}>
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10, position: "sticky", top: 0, zIndex: 20, padding: "10px 0", backdropFilter: "blur(14px)" }}>
           <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>NutriPlan</div>
@@ -1035,6 +1151,50 @@ export default function App() {
           </p>
         </div>
 
+        {/* About / story */}
+        <div className="np-rise" style={{ ...S.card, padding: "28px", marginBottom: 36, background: "linear-gradient(135deg,rgba(248,250,252,.07),rgba(15,23,42,.68))" }}>
+          <div style={sectionLabel}>About us</div>
+          <h2 style={{ margin: "0 0 12px", fontSize: "clamp(25px,4vw,36px)", letterSpacing: -1.2, lineHeight: 1.08 }}>Built for people who are tired of starting over.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.75, margin: "0 0 14px", maxWidth: 850 }}>
+            NutriPlan exists because modern diet culture makes healthy living feel harder than it needs to be. People are told to cut everything out, track every bite perfectly, and act like normal life never happens.
+          </p>
+          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.75, margin: 0, maxWidth: 850 }}>
+            We believe better nutrition should feel calm, practical, and human. Real meals. Better portions. Enough protein. Simple structure. A plan that helps you feel lighter, stronger, and more in control without turning food into a punishment.
+          </p>
+        </div>
+
+        {/* Written testimonials */}
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ ...sectionLabel, textAlign: "center" }}>Early user notes</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14 }}>
+            {TESTIMONIALS.map(([name, quote]) => (
+              <div key={name} className="np-rise" style={{ ...S.card, padding: 20, borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
+                <div style={{ color: "#f8fafc", fontSize: 34, lineHeight: 1, marginBottom: 8 }}>"</div>
+                <p style={{ color: "#dbeafe", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px" }}>{quote}</p>
+                <div style={{ color: "#b7d7c2", fontSize: 13, fontWeight: 900 }}>{name}</div>
+                <div style={{ color: "#64748b", fontSize: 11, marginTop: 4 }}>Written feedback style example. No photos, no medical claims.</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Transformation framing */}
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(183,215,194,.08),rgba(37,56,75,.34))" }}>
+          <div style={sectionLabel}>Before / after, without fake promises</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The real transformation is feeling organized around food.</h2>
+          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
+            NutriPlan does not promise dramatic body changes or use fake photos. The goal is a calmer, more consistent relationship with food that can support fat loss, muscle, and better daily energy over time.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
+            {TRANSFORMATIONS.map(([title, body], i) => (
+              <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 16, padding: 16, background: i === 2 ? "rgba(183,215,194,.1)" : "rgba(2,6,23,.35)" }}>
+                <Pill color={i === 2 ? "#dff3e6" : "#b7d7c2"}>{title}</Pill>
+                <p style={{ color: i === 2 ? "#dff3e6" : "#cbd5e1", fontSize: 14, lineHeight: 1.6, margin: "12px 0 0", fontWeight: 700 }}>{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Micro trust */}
         <div style={{ marginBottom: 36 }}>
           <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Small reasons this feels different</div>
@@ -1111,6 +1271,7 @@ export default function App() {
       </div>
       {!authModal && !legalModal && !(user && isPaid(accessTier)) && <StickyHomeCTA onStart={() => choosePlan("pro")} onPreview={() => choosePlan("free")} />}
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
+      {!authModal && !legalModal && <EmailCapturePopup onStart={() => choosePlan("pro")} />}
       {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); refreshPaymentAccess(u, { showMessage: true }); }} />}
     </div>
   );
