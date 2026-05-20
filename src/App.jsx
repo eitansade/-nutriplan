@@ -886,6 +886,27 @@ export default function App() {
           ))}
         </div>
 
+        {/* Brand story */}
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(183,215,194,.09),rgba(15,23,42,.72))" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Built for normal life</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>Stop restarting every Monday.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 780 }}>
+            NutriPlan was built for people who are tired of diet culture making food feel stressful. You should be able to eat like a normal human being, enjoy satisfying meals, and still build habits that move you forward.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
+            {[
+              "Garlic butter steak with crispy potatoes",
+              "Chicken rice bowls with yogurt garlic sauce",
+              "Greek yogurt with berries and peanut butter drizzle",
+              "High-protein pasta with tomato, parmesan, and basil",
+            ].map(item => (
+              <div key={item} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(2,6,23,.35)", color: "#cbd5e1", fontSize: 13, lineHeight: 1.45, fontWeight: 800 }}>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Who this is for */}
         <div style={{ ...S.card, padding: "22px 26px", marginBottom: 36, background: "rgba(15,23,42,.6)" }}>
           <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Who this is for</div>
