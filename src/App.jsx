@@ -94,6 +94,22 @@ const REAL_FOOD_EXAMPLES = [
   "Turkey burgers with caramelized onions and oven fries",
 ];
 
+const VALUE_STACK = [
+  ["A 7-day food structure", "Meals are organized by day so you are not deciding from scratch every morning."],
+  ["Calorie and macro targets", "Practical estimates for fat loss, maintenance, or muscle gain without pretending food math is perfect."],
+  ["Real recipe direction", "Home-style meals with normal ingredients, simple prep, and portions that feel realistic."],
+  ["Flexibility tools", "Pro and Elite add meal swaps, recipes, and a food label calculator for real-world choices."],
+  ["Workout structure in Elite", "A simple weekly training plan for people who want food and movement in one place."],
+  ["A calmer way to stay consistent", "The product is built around repeatable weeks, not guilt, restriction, or perfect behavior."],
+];
+
+const RECIPE_PREVIEWS = [
+  ["Garlic Butter Steak Plate", "Lean steak, crispy potatoes, cucumber salad, and a small garlic butter finish.", "Satisfying dinner energy without turning health into plain chicken."],
+  ["Creamy Eggs on Sourdough", "Soft scrambled eggs, avocado, cherry tomatoes, and toasted sourdough.", "A calm morning meal that feels warm, normal, and high protein."],
+  ["Chicken Rice Bowl", "Roasted vegetables, seasoned chicken, rice, and yogurt garlic sauce.", "Meal-prep friendly, but still tastes like something you want to eat."],
+  ["High-Protein Pasta", "Slow tomato sauce, lean turkey, parmesan, olive oil, and basil.", "Comfort food made smarter, not removed from your life."],
+];
+
 const MICRO_TRUST = [
   ["Built for normal weeks", "Work, training, cravings, restaurants, and tired nights are part of the plan, not reasons to quit."],
   ["No miracle claims", "NutriPlan gives practical estimates and structure. Your results depend on consistency, health, sleep, stress, and life."],
@@ -189,7 +205,7 @@ function trackTikTok(eventName, payload = {}) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────
 const S = {
-  page: { minHeight: "100vh", background: "radial-gradient(circle at top left,#26384a,#0b1220 44%,#04060b)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
+  page: { minHeight: "100vh", overflowX: "hidden", background: "radial-gradient(circle at top left,#26384a,#0b1220 44%,#04060b)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
   wrap: { width: "min(1100px, calc(100% - 32px))", margin: "0 auto" },
   card: { background: "rgba(15,23,42,.78)", border: "1px solid rgba(148,163,184,.15)", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,.25)" },
   inp: { width: "100%", boxSizing: "border-box", background: "rgba(2,6,23,.75)", color: "#fff", border: "1px solid rgba(148,163,184,.22)", borderRadius: 14, padding: "14px", fontSize: 16, outline: "none" },
@@ -1152,6 +1168,38 @@ export default function App() {
             {REAL_FOOD_EXAMPLES.map(item => (
               <div key={item} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(2,6,23,.35)", color: "#cbd5e1", fontSize: 13, lineHeight: 1.45, fontWeight: 800 }}>
                 {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recipe preview */}
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ ...sectionLabel, textAlign: "center" }}>Meal previews</div>
+          <h2 style={{ margin: "0 auto 16px", textAlign: "center", maxWidth: 760, fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The food should feel familiar before it feels optimized.</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14 }}>
+            {RECIPE_PREVIEWS.map(([title, body, note]) => (
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "linear-gradient(180deg,rgba(248,250,252,.06),rgba(15,23,42,.68))" }}>
+                <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>{title}</h3>
+                <p style={{ color: "#dbeafe", fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>{body}</p>
+                <div style={{ borderTop: "1px solid rgba(148,163,184,.12)", paddingTop: 10, color: "#9fb3c8", fontSize: 12, lineHeight: 1.55 }}>{note}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* What you get */}
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(37,56,75,.48),rgba(15,23,42,.72))" }}>
+          <div style={sectionLabel}>What you actually get</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>A clear food system, not just a calorie number.</h2>
+          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
+            The best nutrition products reduce decision fatigue. NutriPlan gives you structure before the week gets busy, while keeping the food normal enough to repeat.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 12 }}>
+            {VALUE_STACK.map(([title, body]) => (
+              <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 16, padding: 16, background: "rgba(2,6,23,.32)" }}>
+                <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
+                <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.6, margin: "7px 0 0" }}>{body}</p>
               </div>
             ))}
           </div>
