@@ -853,7 +853,6 @@ export default function App() {
             ) : (
               <button onClick={() => setAuthModal("signup")} style={S.authBtn}>Sign up / log in</button>
             )}
-            <button onClick={reset} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13 }}>Reset</button>
           </div>
         </header>
         {accessMsg && <div style={{ borderRadius: 12, padding: "10px 14px", background: accessMsg.includes("active") ? "rgba(183,215,194,.12)" : "rgba(96,165,250,.1)", border: "1px solid " + (accessMsg.includes("active") ? "rgba(183,215,194,.32)" : "rgba(96,165,250,.25)"), marginBottom: 14, fontSize: 13, color: accessMsg.includes("active") ? "#dff3e6" : "#dbeafe" }}>{accessMsg}</div>}
