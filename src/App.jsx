@@ -105,15 +105,6 @@ const DAILY_SUPPORT = [
   ["Streak mindset", "A missed meal does not restart the week. The next choice is where consistency is rebuilt."],
 ];
 
-const GROWTH_PATHS = [
-  "Recipe ebooks",
-  "Premium seasonal meal plans",
-  "Simple habit tracker",
-  "Meal-prep partnerships",
-  "Fitness creator collaborations",
-  "Healthy restaurant guides",
-];
-
 const isPaid = (t) => t !== "free";
 const PAID_TIERS = ["basic", "pro", "elite"];
 const isPaidTier = (t) => PAID_TIERS.includes(t);
@@ -329,6 +320,23 @@ function LegalFooter({ onOpen }) {
         {"(c) " + new Date().getFullYear() + " NutriPlan. All rights reserved."}
       </p>
     </footer>
+  );
+}
+
+function StickyHomeCTA({ onStart, onPreview }) {
+  return (
+    <div style={{ position: "fixed", left: 12, right: 12, bottom: 12, zIndex: 40, pointerEvents: "none" }}>
+      <div style={{ width: "min(760px,100%)", margin: "0 auto", padding: "10px", borderRadius: 18, background: "rgba(5,10,18,.86)", border: "1px solid rgba(183,215,194,.22)", boxShadow: "0 18px 50px rgba(0,0,0,.36)", backdropFilter: "blur(16px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, pointerEvents: "auto" }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ color: "#f8fafc", fontWeight: 900, fontSize: 13, lineHeight: 1.2 }}>Ready to build your plan?</div>
+          <div style={{ color: "#9fb3c8", fontSize: 11, lineHeight: 1.35 }}>Real food. Simple structure. No extreme dieting.</div>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <button onClick={onPreview} style={{ ...S.sec, padding: "10px 12px", borderRadius: 12, fontSize: 12 }}>Preview</button>
+          <button onClick={onStart} style={{ ...S.btn, padding: "10px 14px", borderRadius: 12, fontSize: 12 }}>Start - $27</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -902,7 +910,7 @@ export default function App() {
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (screen === "home") return (
     <div style={S.page}>
-      <div style={{ ...S.wrap, padding: "28px 0 70px" }}>
+      <div style={{ ...S.wrap, padding: "28px 0 112px" }}>
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10, position: "sticky", top: 0, zIndex: 20, padding: "10px 0", backdropFilter: "blur(14px)" }}>
           <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>NutriPlan</div>
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
@@ -937,8 +945,8 @@ export default function App() {
           <p style={{ color: "#94a3b8", fontSize: 18, lineHeight: 1.65, maxWidth: 600, margin: "0 auto 30px" }}>
             Real nutrition for real life: simple meals, flexible structure, and sustainable fat-loss habits for people who already care about feeling good.
           </p>
-          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Get My Plan - $27</button>
-          <div style={{ marginTop: 10, color: "#475569", fontSize: 12 }}>Or try the free preview below. No credit card needed.</div>
+          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Build My Plan - $27</button>
+          <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>One-time founding checkout. Or try the free preview below.</div>
         </section>
 
         {/* Trust strip */}
@@ -1065,10 +1073,11 @@ export default function App() {
               <Pill>{p.badge}</Pill>
               <h2 style={{ margin: "10px 0 2px", fontSize: 24 }}>{p.name}</h2>
               <div style={{ fontSize: 34, fontWeight: 900, marginBottom: 4 }}>{p.price}</div>
+              {p.id !== "free" && <div style={{ color: p.recommended ? "#dff3e6" : "#9fb3c8", fontSize: 12, fontWeight: 800, marginBottom: 8 }}>{p.recommended ? "Best starting point" : "One-time digital access"}</div>}
               <p style={{ color: "#94a3b8", minHeight: 48, fontSize: 14, margin: "0 0 14px", lineHeight: 1.55 }}>{p.desc}</p>
               {p.features.map(f => <div key={f} style={{ color: "#cbd5e1", fontSize: 13, marginBottom: 8, display: "flex", gap: 8, alignItems: "flex-start" }}><span style={{ color: "#b7d7c2", flexShrink: 0 }}>✓</span>{f}</div>)}
               <button onClick={() => choosePlan(p.id)} style={{ ...(p.id === "free" ? S.sec : S.btn), width: "100%", marginTop: 16 }}>
-                {p.id === "free" ? "Try free preview" : "Get " + p.name + " - " + p.price}
+                {p.id === "free" ? "Try free preview" : p.recommended ? "Build my Pro plan - " + p.price : "Choose " + p.name + " - " + p.price}
               </button>
             </div>
           ))}
@@ -1089,26 +1098,18 @@ export default function App() {
           </div>
         </div>
         <FAQSection />
-        <div style={{ ...S.card, padding: "22px 26px", marginTop: 28, background: "rgba(15,23,42,.52)" }}>
-          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Where NutriPlan can grow next</div>
-          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.65, margin: "0 0 14px", maxWidth: 780 }}>
-            This is the foundation for a bigger wellness ecosystem: recipes, check-ins, seasonal plans, creator partnerships, and simple tools that make healthy living easier over time.
-          </p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {GROWTH_PATHS.map(item => <Pill key={item}>{item}</Pill>)}
-          </div>
-        </div>
         <div style={{ textAlign: "center", marginTop: 36, padding: "30px 20px", borderRadius: 24, background: "linear-gradient(135deg,rgba(183,215,194,.12),rgba(96,165,250,.09))", border: "1px solid rgba(183,215,194,.22)" }}>
           <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Ready to stop guessing?</div>
           <h2 style={{ margin: "0 auto 12px", maxWidth: 720, fontSize: "clamp(26px,5vw,44px)", letterSpacing: -1.5, lineHeight: 1.05 }}>Build a plan that fits your real life.</h2>
           <p style={{ color: "#9fb3c8", fontSize: 16, lineHeight: 1.65, margin: "0 auto 22px", maxWidth: 620 }}>
             Start with real food, clear structure, and a nutrition system designed for consistency instead of punishment.
           </p>
-          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "15px 30px", fontSize: 16 }}>Start your plan today</button>
+          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "15px 30px", fontSize: 16 }}>Build my plan today</button>
           <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>Go to: https://nutriplan-taupe.vercel.app</div>
         </div>
         <LegalFooter onOpen={setLegalModal} />
       </div>
+      {!authModal && !legalModal && !(user && isPaid(accessTier)) && <StickyHomeCTA onStart={() => choosePlan("pro")} onPreview={() => choosePlan("free")} />}
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
       {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); refreshPaymentAccess(u, { showMessage: true }); }} />}
     </div>
