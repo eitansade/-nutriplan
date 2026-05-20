@@ -102,9 +102,11 @@ const MICRO_TRUST = [
 ];
 
 const TESTIMONIALS = [
-  ["Maya, 29", "I did not need another strict diet. I needed someone to make normal food feel organized. NutriPlan finally made planning my week feel doable."],
-  ["Jordan, 34", "The biggest change was not eating less. It was knowing what to eat after work instead of guessing, ordering takeout, and restarting Monday."],
-  ["Alex, 26", "I already trained, but food was the messy part. The plan helped me keep protein high without making every meal feel like gym food."],
+  "Finally, a meal plan that does not feel like punishment.",
+  "Real food, simple structure, and no extreme diet energy.",
+  "This feels like something I could actually follow.",
+  "The meals feel normal - not like boring fitness food.",
+  "I wanted something that helps me stay consistent without obsessing.",
 ];
 
 const TRANSFORMATIONS = [
@@ -1065,6 +1067,22 @@ export default function App() {
           <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>One-time founding checkout. Or try the free preview below.</div>
         </section>
 
+        {/* TikTok visitor bridge */}
+        <div className="np-rise" style={{ ...S.card, padding: "18px 20px", marginBottom: 34, background: "linear-gradient(135deg,rgba(183,215,194,.1),rgba(37,56,75,.56))", border: "1px solid rgba(183,215,194,.24)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 18, alignItems: "center" }}>
+          <div>
+            <div style={sectionLabel}>From link in bio to real life</div>
+            <h2 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4vw,32px)", letterSpacing: -1, lineHeight: 1.08 }}>If TikTok brought you here, this is the simple version.</h2>
+            <p style={{ color: "#dbeafe", fontSize: 15, lineHeight: 1.7, margin: 0 }}>
+              NutriPlan is for people who want fast clarity without extreme dieting: real food, realistic progress, simple structure, and meals that fit busy American life.
+            </p>
+          </div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {["No punishment diet", "Real meals, not macro chaos", "Build your plan in minutes"].map(item => (
+              <div key={item} style={{ borderRadius: 999, padding: "10px 12px", background: "rgba(2,6,23,.35)", border: "1px solid rgba(148,163,184,.12)", color: "#f8fafc", fontSize: 13, fontWeight: 900 }}>{item}</div>
+            ))}
+          </div>
+        </div>
+
         {/* Trust strip */}
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px 24px", marginBottom: 40 }}>
           {["No extreme diets", "Real food meals", "Built for busy people", "Results vary", "Not medical advice"].map(t => (
@@ -1161,18 +1179,26 @@ export default function App() {
           <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.75, margin: 0, maxWidth: 850 }}>
             We believe better nutrition should feel calm, practical, and human. Real meals. Better portions. Enough protein. Simple structure. A plan that helps you feel lighter, stronger, and more in control without turning food into a punishment.
           </p>
+          <div style={{ marginTop: 18, padding: "16px 18px", borderRadius: 16, background: "rgba(183,215,194,.08)", border: "1px solid rgba(183,215,194,.18)" }}>
+            <strong style={{ color: "#f8fafc", fontSize: 15 }}>This is not about hating your body.</strong>
+            <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.65, margin: "6px 0 0" }}>
+              It is about taking care of yourself with food that feels normal, habits that fit real life, and structure that helps you stop restarting every Monday.
+            </p>
+          </div>
         </div>
 
         {/* Written testimonials */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{ ...sectionLabel, textAlign: "center" }}>Early user notes</div>
+          <div style={{ ...sectionLabel, textAlign: "center" }}>Early feedback we are looking for</div>
+          <p style={{ color: "#9fb3c8", fontSize: 13, lineHeight: 1.6, textAlign: "center", maxWidth: 680, margin: "0 auto 16px" }}>
+            These are not published customer reviews. They describe the experience NutriPlan is intentionally built to create.
+          </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14 }}>
-            {TESTIMONIALS.map(([name, quote]) => (
-              <div key={name} className="np-rise" style={{ ...S.card, padding: 20, borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
+            {TESTIMONIALS.map((quote) => (
+              <div key={quote} className="np-rise" style={{ ...S.card, padding: 20, borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
                 <div style={{ color: "#f8fafc", fontSize: 34, lineHeight: 1, marginBottom: 8 }}>"</div>
                 <p style={{ color: "#dbeafe", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px" }}>{quote}</p>
-                <div style={{ color: "#b7d7c2", fontSize: 13, fontWeight: 900 }}>{name}</div>
-                <div style={{ color: "#64748b", fontSize: 11, marginTop: 4 }}>Written feedback style example. No photos, no medical claims.</div>
+                <div style={{ color: "#64748b", fontSize: 11, marginTop: 4 }}>Positioning quote, not a verified review.</div>
               </div>
             ))}
           </div>
