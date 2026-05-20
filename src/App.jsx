@@ -62,6 +62,36 @@ const FAQS = [
   ["Why is there a launch timer?", "It highlights the current founding launch offer for this visit. It does not secretly change your checkout. The PayPal checkout price is always the source of truth before you pay."],
 ];
 
+const HOME_PROBLEM_POINTS = [
+  "You work, train, and try to eat better, but still feel stuck.",
+  "You start strong, restrict too hard, get tired, and restart next Monday.",
+  "You do not need another impossible diet. You need a plan that fits your real life.",
+];
+
+const HOME_AUDIENCE = [
+  "You want to lose weight but hate extreme diets.",
+  "You train but feel stuck at the last level.",
+  "You eat pretty healthy but still feel tired, bloated, or inconsistent.",
+  "You want to build muscle without guessing what to eat.",
+  "You want health to feel simple again.",
+  "You want a plan that feels human, not robotic.",
+];
+
+const HOW_IT_WORKS = [
+  ["Tell NutriPlan about your life", "Choose your goal, schedule, meals per day, activity level, and food preferences."],
+  ["Get a realistic food structure", "Your calories, macros, meals, and recipes are organized into a plan you can actually follow."],
+  ["Use it in the real world", "Swap meals, adjust portions, and keep moving without turning food into punishment."],
+];
+
+const REAL_FOOD_EXAMPLES = [
+  "Garlic butter steak with crispy potatoes",
+  "Creamy scrambled eggs on sourdough",
+  "Chicken rice bowls with yogurt garlic sauce",
+  "High-protein pasta with tomato, parmesan, and basil",
+  "Greek yogurt bowls with berries and peanut butter drizzle",
+  "Turkey burgers with caramelized onions and oven fries",
+];
+
 const isPaid = (t) => t !== "free";
 const PAID_TIERS = ["basic", "pro", "elite"];
 const isPaidTier = (t) => PAID_TIERS.includes(t);
@@ -898,33 +928,34 @@ export default function App() {
           ))}
         </div>
 
-        {/* Brand story */}
+        {/* Problem / mission */}
         <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(183,215,194,.09),rgba(15,23,42,.72))" }}>
-          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Built for normal life</div>
-          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>Stop restarting every Monday.</h2>
-          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 780 }}>
-            NutriPlan was built for people who are tired of diet culture making food feel stressful. You should be able to eat like a normal human being, enjoy satisfying meals, and still build habits that move you forward.
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Why NutriPlan was built</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,36px)", letterSpacing: -1, lineHeight: 1.08 }}>You are not lazy. Your plan is probably broken.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+            NutriPlan was built for people who are tired of extreme diets, confusing advice, and plans that look perfect on paper but collapse in real life. Most people do not fail because they are weak. They fail because their plan does not match their work, cravings, stress, weekends, family meals, and real schedule.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
-            {[
-              "Garlic butter steak with crispy potatoes",
-              "Chicken rice bowls with yogurt garlic sauce",
-              "Greek yogurt with berries and peanut butter drizzle",
-              "High-protein pasta with tomato, parmesan, and basil",
-            ].map(item => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginBottom: 18 }}>
+            {HOME_PROBLEM_POINTS.map(item => (
               <div key={item} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(2,6,23,.35)", color: "#cbd5e1", fontSize: 13, lineHeight: 1.45, fontWeight: 800 }}>
                 {item}
               </div>
             ))}
+          </div>
+          <div style={{ padding: "16px 18px", borderRadius: 16, background: "rgba(248,250,252,.06)", border: "1px solid rgba(183,215,194,.18)" }}>
+            <div style={{ color: "#f8fafc", fontSize: 18, fontWeight: 900, marginBottom: 6 }}>Our mission is simple.</div>
+            <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+              To help people eat better, feel better, build muscle, lose fat, and live healthier without turning food into a prison. Real food. Real life. Real progress.
+            </p>
           </div>
         </div>
 
         {/* Who this is for */}
         <div style={{ ...S.card, padding: "22px 26px", marginBottom: 36, background: "rgba(15,23,42,.6)" }}>
           <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Who this is for</div>
-          <p style={{ color: "#f8fafc", fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>NutriPlan is for people who:</p>
+          <p style={{ color: "#f8fafc", fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>This is not about being perfect. This is about becoming consistent.</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "8px 24px" }}>
-            {["Feel stuck even though they are trying", "Hate boring diets that never last", "Want simple meals, not complicated recipes", "Want realistic progress, not overnight miracles", "Need structure and guidance, not shame"].map(item => (
+            {HOME_AUDIENCE.map(item => (
               <div key={item} style={{ color: "#cbd5e1", fontSize: 14, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <span style={{ color: "#b7d7c2", flexShrink: 0, marginTop: 1 }}>-&gt;</span>{item}
               </div>
@@ -932,22 +963,46 @@ export default function App() {
           </div>
         </div>
 
-        {/* Product value */}
+        {/* How it works */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>What you get inside</div>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>How it works</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
-            {[
-              ["A real 7-day structure", "Meals are organized by day so you know what to eat without starting over every morning."],
-              ["Calories and macros", "Targets are estimated from your body, goal, and activity level, then paired with practical meals."],
-              ["Flexible food swaps", "Pro and Elite let you swap meals when life, cravings, or leftovers change the plan."],
-              ["Recipes that feel normal", "Simple American-friendly meals with ingredients, steps, and practical notes."],
-            ].map(([title, body]) => (
+            {HOW_IT_WORKS.map(([title, body], i) => (
               <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(15,23,42,.58)" }}>
+                <Pill color="#b7d7c2">Step {i + 1}</Pill>
                 <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>{title}</h3>
                 <p style={{ margin: 0, color: "#9fb3c8", fontSize: 14, lineHeight: 1.6 }}>{body}</p>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Real food */}
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "rgba(15,23,42,.6)" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Recipes and real food</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>Healthy food should taste like something you actually want to eat.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+            Inside NutriPlan, meals are built from real ingredients: high-protein breakfasts, filling lunches, balanced dinners, smart snacks, and food that can fit busy days. No boring diet food. No fake perfection. Just better meals that help you move toward your goal.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
+            {REAL_FOOD_EXAMPLES.map(item => (
+              <div key={item} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(2,6,23,.35)", color: "#cbd5e1", fontSize: 13, lineHeight: 1.45, fontWeight: 800 }}>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Philosophy */}
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(96,165,250,.08),rgba(15,23,42,.7))" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>The NutriPlan philosophy</div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The best plan is not the hardest plan.</h2>
+          <p style={{ color: "#dbeafe", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+            The best plan is the one you can actually follow: real meals, flexible choices, simple structure, enough protein, smart carbs, better habits, and food that still feels enjoyable.
+          </p>
+          <p style={{ color: "#9fb3c8", fontSize: 14, lineHeight: 1.7, margin: 0, maxWidth: 820 }}>
+            Health should not feel like punishment. Your plan should support your life, not take it over.
+          </p>
         </div>
 
         {/* Plan cards */}
@@ -982,6 +1037,15 @@ export default function App() {
           </div>
         </div>
         <FAQSection />
+        <div style={{ textAlign: "center", marginTop: 36, padding: "30px 20px", borderRadius: 24, background: "linear-gradient(135deg,rgba(183,215,194,.12),rgba(96,165,250,.09))", border: "1px solid rgba(183,215,194,.22)" }}>
+          <div style={{ color: "#b7d7c2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Ready to stop guessing?</div>
+          <h2 style={{ margin: "0 auto 12px", maxWidth: 720, fontSize: "clamp(26px,5vw,44px)", letterSpacing: -1.5, lineHeight: 1.05 }}>Build a plan that fits your real life.</h2>
+          <p style={{ color: "#9fb3c8", fontSize: 16, lineHeight: 1.65, margin: "0 auto 22px", maxWidth: 620 }}>
+            Start with real food, clear structure, and a nutrition system designed for consistency instead of punishment.
+          </p>
+          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "15px 30px", fontSize: 16 }}>Start your plan today</button>
+          <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>Go to: https://nutriplan-taupe.vercel.app</div>
+        </div>
         <LegalFooter onOpen={setLegalModal} />
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
