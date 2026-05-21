@@ -1077,7 +1077,7 @@ export default function App() {
             Eat better. Look better. Stay consistent.
           </h1>
           <p style={{ color: "#94a3b8", fontSize: 18, lineHeight: 1.65, maxWidth: 600, margin: "0 auto 30px" }}>
-            Real nutrition for real life: simple meals, flexible structure, and sustainable fat-loss habits for people who already care about feeling good.
+            Real nutrition for real life: high-protein meal plans, flexible structure, and sustainable fat-loss habits for people who want healthy living without punishment.
           </p>
           <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Build My Plan - $27</button>
           <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>One-time founding checkout. Or try the free preview below.</div>
@@ -1089,7 +1089,7 @@ export default function App() {
             <div style={sectionLabel}>From link in bio to real life</div>
             <h2 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4vw,32px)", letterSpacing: -1, lineHeight: 1.08 }}>If TikTok brought you here, this is the simple version.</h2>
             <p style={{ color: "#e9f3ef", fontSize: 15, lineHeight: 1.7, margin: 0 }}>
-              NutriPlan is for people who want fast clarity without extreme dieting: real food, realistic progress, simple structure, and meals that fit busy American life.
+              NutriPlan is for people who want fast clarity without extreme dieting: real food meal plans, realistic progress, simple structure, and meals that fit busy American life.
             </p>
           </div>
           <div style={{ display: "grid", gap: 8 }}>
