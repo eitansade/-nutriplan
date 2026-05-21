@@ -13,23 +13,35 @@ https://nutriplan-taupe.vercel.app
 Use existing video files in:
 `C:\Users\user\Documents\Codex\2026-05-19\new-chat`
 
-1. `nutriplan_last_level.mp4`
+1. `nutriplan_stop_starving_yourself.mp4`
+   - Best audience: broad fat-loss audience tired of extreme dieting.
+   - First caption line: "Stop starving yourself."
+
+2. `nutriplan_eat_like_normal.mp4`
+   - Best audience: people who want health without obsession.
+   - First caption line: "You can eat like a normal human and still become healthier."
+
+3. `nutriplan_healthy_feels_home.mp4`
+   - Best audience: warm wellness / healthy food audience.
+   - First caption line: "Healthy eating should feel like home."
+
+4. `nutriplan_last_level.mp4`
    - Best audience: people who already train and feel stuck.
    - First caption line: "You train. You eat pretty good. But you still feel stuck."
 
-2. `nutriplan_stop_monday_cycle.mp4`
+5. `nutriplan_stop_monday_cycle.mp4`
    - Best audience: people tired of restarting.
    - First caption line: "Still restarting your diet every Monday?"
 
-3. `nutriplan_stuck_80_percent.mp4`
+6. `nutriplan_stuck_80_percent.mp4`
    - Best audience: fitness-aware but inconsistent people.
    - First caption line: "This is for people stuck at 80%."
 
-4. `nutriplan_healthy_not_boring.mp4`
+7. `nutriplan_healthy_not_boring.mp4`
    - Best audience: broad healthy food audience.
    - First caption line: "Healthy food does not have to be dry chicken and sadness."
 
-5. `nutriplan_not_lazy_plan_broken.mp4`
+8. `nutriplan_not_lazy_plan_broken.mp4`
    - Best audience: emotional pain and anti-shame audience.
    - First caption line: "You are not lazy. Your plan is broken."
 
@@ -168,6 +180,33 @@ https://nutriplan-taupe.vercel.app
 #healthyhabits #nutrition #wellness #mealprep #fatloss
 ```
 
+### 11. Stop Starving Yourself
+```text
+Stop starving yourself.
+
+You do not need another extreme diet.
+You need real food, real structure, and a plan you can actually live with.
+
+Start here:
+https://nutriplan-taupe.vercel.app
+
+#weightloss #healthyfood #mealprep #wellness #nutrition
+```
+
+### 12. Healthy Feels Like Home
+```text
+Healthy eating should feel like home.
+
+Not math.
+Not punishment.
+Real meals. Simple structure. A plan that supports your life.
+
+Build your plan:
+https://nutriplan-taupe.vercel.app
+
+#healthyfood #wellness #nutrition #mealprep #fatloss
+```
+
 ## 7-Day Organic Schedule
 
 Day 1:
@@ -207,4 +246,3 @@ Day 7:
 5. Do not boost. Do not promote. Do not add budget.
 6. After posting, open the video and add the pinned-style brand comment from the schedule.
 7. Check profile bio link points to: https://nutriplan-taupe.vercel.app
-
