@@ -50,9 +50,10 @@ const PAYPAL = {
 const PLANS = [
   { id: "free", name: "Free", price: "$0", badge: "Try it free", desc: "Preview the experience before you commit.", features: ["1 full day of meals", "Preview 2 locked days", "Set your own calories", "No credit card needed"] },
   { id: "basic", name: "Basic", price: "$12", badge: "Full plan", desc: "A complete 7-day nutrition structure built around your body and goal.", features: ["Full 7-day meal plan", "Smart calorie estimate", "Daily macro targets", "Body-fat estimate"] },
-  { id: "pro", name: "Pro", price: "$27", badge: "Most popular", desc: "The flexible version most people need: full plan, swaps, recipes, and tools.", features: ["Everything in Basic", "Swap meals you dislike", "Food label calculator", "Full recipe instructions"], recommended: true },
+  { id: "pro", name: "NutriPlan Premium", price: "$27", badge: "One clear plan", desc: "The complete nutrition experience: a realistic 7-day plan, flexible swaps, recipes, and practical food tools.", features: ["Complete 7-day meal plan", "Smart calorie and macro estimates", "Meal swaps for real life", "Food label calculator", "Full recipe instructions"], recommended: true },
   { id: "elite", name: "Elite", price: "$49", badge: "Food + Training", desc: "Food and training together for people who want structure beyond meals.", features: ["Everything in Pro", "Custom weekly workouts", "Gym or home options", "Built around your schedule"], premium: true },
 ];
+const PRICING_PLANS = PLANS.filter(p => p.id === "free" || p.id === "pro");
 
 const FAQS = [
   ["What happens after I pay?", "Create or sign in to your NutriPlan account using the same email you used at PayPal checkout. PayPal sends the payment to our webhook, your Supabase profile is marked active, and the Refresh access button unlocks your plan."],
@@ -98,8 +99,8 @@ const VALUE_STACK = [
   ["A 7-day food structure", "Meals are organized by day so you are not deciding from scratch every morning."],
   ["Calorie and macro targets", "Practical estimates for fat loss, maintenance, or muscle gain without pretending food math is perfect."],
   ["Real recipe direction", "Home-style meals with normal ingredients, simple prep, and portions that feel realistic."],
-  ["Flexibility tools", "Pro and Elite add meal swaps, recipes, and a food label calculator for real-world choices."],
-  ["Workout structure in Elite", "A simple weekly training plan for people who want food and movement in one place."],
+  ["Premium flexibility tools", "NutriPlan Premium adds meal swaps, recipes, and a food label calculator for real-world choices."],
+  ["A cleaner upgrade path", "The public offer is simple: preview it free, then unlock the full nutrition system when you are ready."],
   ["A calmer way to stay consistent", "The product is built around repeatable weeks, not guilt, restriction, or perfect behavior."],
 ];
 
@@ -140,6 +141,7 @@ const DAILY_SUPPORT = [
 const isPaid = (t) => t !== "free";
 const PAID_TIERS = ["basic", "pro", "elite"];
 const isPaidTier = (t) => PAID_TIERS.includes(t);
+const tierLabel = (t) => t === "pro" ? "Premium" : t ? t.charAt(0).toUpperCase() + t.slice(1) : "Free";
 const canSwap = (t) => ["pro", "elite"].includes(t);
 const hasWorkouts = (t) => t === "elite";
 const hasCalc = (t) => ["pro", "elite"].includes(t);
@@ -204,17 +206,29 @@ function trackTikTok(eventName, payload = {}) {
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────
-const S = {
-  page: { minHeight: "100vh", overflowX: "hidden", background: "radial-gradient(circle at top left,#334844,#121c22 44%,#f4f1e8)", color: "#f8fafc", fontFamily: "Inter,system-ui,sans-serif" },
-  wrap: { width: "min(1100px, calc(100% - 32px))", margin: "0 auto" },
-  card: { background: "rgba(23,34,38,.78)", border: "1px solid rgba(148,163,184,.15)", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,.25)" },
-  inp: { width: "100%", boxSizing: "border-box", background: "rgba(10,20,22,.75)", color: "#fff", border: "1px solid rgba(148,163,184,.22)", borderRadius: 14, padding: "14px", fontSize: 16, outline: "none" },
-  btn: { border: 0, borderRadius: 14, padding: "14px 18px", background: "linear-gradient(135deg,#f8fafc,#c8dcc8)", color: "#10201d", fontWeight: 900, cursor: "pointer", fontSize: 15, boxShadow: "0 12px 30px rgba(200,220,200,.18)" },
-  sec: { border: "1px solid rgba(148,163,184,.2)", borderRadius: 14, padding: "14px 18px", background: "rgba(23,34,38,.72)", color: "#e2e8f0", fontWeight: 700, cursor: "pointer", fontSize: 15 },
-  authBtn: { border: "1px solid rgba(200,220,200,.5)", borderRadius: 999, padding: "10px 16px", background: "linear-gradient(135deg,rgba(248,250,252,.96),rgba(200,220,200,.92))", color: "#10201d", fontWeight: 900, cursor: "pointer", fontSize: 13, boxShadow: "0 12px 28px rgba(200,220,200,.18)" },
+const C = {
+  bg: "#0F1720",
+  bg2: "#18242E",
+  green: "#7BC67B",
+  sage: "#A8D5A2",
+  cream: "#F5F1E8",
+  olive: "#6B8F71",
+  gold: "#D6B36A",
+  text: "#F8FAFC",
+  muted: "#B8C4CC",
 };
 
-const sectionLabel = { color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 };
+const S = {
+  page: { minHeight: "100vh", overflowX: "hidden", background: `radial-gradient(circle at top left,rgba(107,143,113,.32),${C.bg2} 36%,${C.bg} 78%)`, color: C.text, fontFamily: "Inter,system-ui,sans-serif" },
+  wrap: { width: "min(1100px, calc(100% - 32px))", margin: "0 auto" },
+  card: { background: "rgba(24,36,46,.78)", border: "1px solid rgba(168,213,162,.16)", borderRadius: 22, boxShadow: "0 20px 60px rgba(0,0,0,.24)" },
+  inp: { width: "100%", boxSizing: "border-box", background: "rgba(15,23,32,.78)", color: C.text, border: "1px solid rgba(184,196,204,.22)", borderRadius: 14, padding: "14px", fontSize: 16, outline: "none" },
+  btn: { border: 0, borderRadius: 14, padding: "14px 18px", background: `linear-gradient(135deg,${C.sage},${C.green})`, color: C.bg, fontWeight: 900, cursor: "pointer", fontSize: 15, boxShadow: "0 14px 34px rgba(123,198,123,.22)" },
+  sec: { border: "1px solid rgba(184,196,204,.2)", borderRadius: 14, padding: "14px 18px", background: "rgba(24,36,46,.72)", color: "#e2e8f0", fontWeight: 700, cursor: "pointer", fontSize: 15 },
+  authBtn: { border: "1px solid rgba(123,198,123,.55)", borderRadius: 999, padding: "10px 16px", background: `linear-gradient(135deg,${C.cream},${C.sage})`, color: C.bg, fontWeight: 900, cursor: "pointer", fontSize: 13, boxShadow: "0 12px 28px rgba(123,198,123,.2)" },
+};
+
+const sectionLabel = { color: C.sage, fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 };
 
 // ─── Legal ────────────────────────────────────────────────────────────────
 const LEGAL = {
@@ -225,7 +239,7 @@ const LEGAL = {
 
 // ─── UI Components ────────────────────────────────────────────────────────
 function Pill({ children, color }) {
-  return <span style={{ display: "inline-flex", border: "1px solid rgba(148,163,184,.18)", background: "rgba(23,34,38,.72)", color: color || "#cbd5e1", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 800 }}>{children}</span>;
+  return <span style={{ display: "inline-flex", border: "1px solid rgba(148,163,184,.18)", background: "rgba(24,36,46,.72)", color: color || "#cbd5e1", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 800 }}>{children}</span>;
 }
 function MacroBox({ icon, val, label }) {
   return (
@@ -267,14 +281,14 @@ function SliderField({ label, error, value, onChange, min, max, step = 1, unit, 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <label style={{ color: "#94a3b8", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".07em" }}>{label}</label>
         {altUnit && (
-          <button type="button" onClick={() => setUseAlt(u => !u)} style={{ background: "rgba(200,220,200,.12)", border: "1px solid rgba(200,220,200,.3)", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 800, color: "#c8dcc8", cursor: "pointer" }}>
+          <button type="button" onClick={() => setUseAlt(u => !u)} style={{ background: "rgba(168,213,162,.12)", border: "1px solid rgba(168,213,162,.3)", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 800, color: "#A8D5A2", cursor: "pointer" }}>
             {useAlt ? altUnit : unit} / {useAlt ? unit : altUnit}
           </button>
         )}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <input type="range" min={displayMin} max={displayMax} step={step} value={displayVal} onChange={handleSlider}
-          style={{ flex: 1, height: 6, borderRadius: 999, outline: "none", cursor: "pointer", appearance: "none", WebkitAppearance: "none", background: `linear-gradient(to right,#c8dcc8 ${pct}%,rgba(148,163,184,.18) ${pct}%)` }} />
+          style={{ flex: 1, height: 6, borderRadius: 999, outline: "none", cursor: "pointer", appearance: "none", WebkitAppearance: "none", background: `linear-gradient(to right,#A8D5A2 ${pct}%,rgba(148,163,184,.18) ${pct}%)` }} />
         <div style={{ minWidth: 68, textAlign: "right", fontSize: 22, fontWeight: 900, color: "#f8fafc" }}>
           {displayVal}<span style={{ fontSize: 12, color: "#64748b", marginLeft: 3 }}>{useAlt ? altUnit : unit}</span>
         </div>
@@ -284,7 +298,7 @@ function SliderField({ label, error, value, onChange, min, max, step = 1, unit, 
         <span>{displayMax} {useAlt ? altUnit : unit}</span>
       </div>
       {error && <div style={{ color: "#fca5a5", fontSize: 12 }}>{error}</div>}
-      <style>{`input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#c8dcc8);border:2px solid #020617;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#c8dcc8);border:2px solid #020617;cursor:pointer}`}</style>
+      <style>{`input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#A8D5A2);border:2px solid #020617;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#A8D5A2);border:2px solid #020617;cursor:pointer}`}</style>
     </div>
   );
 }
@@ -301,13 +315,13 @@ function LaunchBanner() {
   const mins = String(Math.floor(secsLeft / 60)).padStart(2, "0");
   const secs = String(secsLeft % 60).padStart(2, "0");
   return (
-    <div style={{ marginTop: 18, marginBottom: 24, borderRadius: 18, padding: "16px 18px", background: "linear-gradient(135deg,rgba(200,220,200,.18),rgba(125,167,174,.12),rgba(251,191,36,.08))", border: "1px solid rgba(200,220,200,.36)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", boxShadow: "0 18px 45px rgba(0,0,0,.22)" }}>
+    <div style={{ marginTop: 18, marginBottom: 24, borderRadius: 18, padding: "16px 18px", background: "linear-gradient(135deg,rgba(168,213,162,.18),rgba(107,143,113,.12),rgba(251,191,36,.08))", border: "1px solid rgba(168,213,162,.36)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap", boxShadow: "0 18px 45px rgba(0,0,0,.22)" }}>
       <div style={{ minWidth: 220, flex: "1 1 260px" }}>
-        <div style={{ fontSize: 12, fontWeight: 900, color: "#e9f3ef", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 4 }}>Founding launch pricing</div>
-        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>{expired ? "Founding rates are still shown below" : "Early access rates are live now"}</div>
-        <div style={{ fontSize: 12, color: "#b6c4bf" }}>{expired ? "PayPal checkout shows the final price before you pay." : "Your visit timer stays consistent. Checkout price is always final before payment."}</div>
+        <div style={{ fontSize: 12, fontWeight: 900, color: "#D6B36A", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 4 }}>Founding launch offer</div>
+        <div style={{ fontSize: 15, fontWeight: 900, color: "#f8fafc", marginBottom: 2 }}>{expired ? "Premium access is shown below" : "Premium access is open now"}</div>
+        <div style={{ fontSize: 12, color: "#B8C4CC" }}>{expired ? "PayPal checkout shows the final price before you pay." : "A calm launch reminder. No hidden price changes; checkout is always the source of truth."}</div>
       </div>
-      <div style={{ fontVariantNumeric: "tabular-nums", fontSize: expired ? 17 : 26, fontWeight: 900, color: "#10201d", letterSpacing: expired ? 0 : 1, background: "linear-gradient(135deg,#f8fafc,#c8dcc8)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{expired ? "Check price" : mins + ":" + secs}</div>
+      <div style={{ fontVariantNumeric: "tabular-nums", fontSize: expired ? 17 : 26, fontWeight: 900, color: "#0F1720", letterSpacing: expired ? 0 : 1, background: "linear-gradient(135deg,#F5F1E8,#D6B36A)", borderRadius: 14, padding: "10px 16px", minWidth: 96, textAlign: "center" }}>{expired ? "Check price" : mins + ":" + secs}</div>
     </div>
   );
 }
@@ -315,12 +329,12 @@ function LaunchBanner() {
 function FAQSection() {
   return (
     <div style={{ marginTop: 28 }}>
-      <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Questions before you start</div>
+      <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Questions before you start</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
         {FAQS.map(([question, answer]) => (
-          <details key={question} style={{ ...S.card, padding: "16px 18px", borderRadius: 18, background: "rgba(23,34,38,.58)" }}>
+          <details key={question} style={{ ...S.card, padding: "16px 18px", borderRadius: 18, background: "rgba(24,36,46,.58)" }}>
             <summary style={{ cursor: "pointer", color: "#f8fafc", fontWeight: 900, fontSize: 14 }}>{question}</summary>
-            <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>{answer}</p>
+            <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>{answer}</p>
           </details>
         ))}
       </div>
@@ -332,7 +346,7 @@ function BrandMotionStyles() {
   return (
     <style>{`
       @keyframes nutriplanRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-      @keyframes nutriplanGlow{0%,100%{box-shadow:0 18px 50px rgba(0,0,0,.28)}50%{box-shadow:0 20px 60px rgba(200,220,200,.16)}}
+      @keyframes nutriplanGlow{0%,100%{box-shadow:0 18px 50px rgba(0,0,0,.28)}50%{box-shadow:0 20px 60px rgba(168,213,162,.16)}}
       .np-rise{animation:nutriplanRise .55s ease both}
       .np-glow{animation:nutriplanGlow 4s ease-in-out infinite}
       @media (max-width:640px){.np-hide-mobile{display:none!important}.np-mobile-tight{padding-left:16px!important;padding-right:16px!important}}
@@ -367,7 +381,7 @@ function EmailCapturePopup({ onStart }) {
   if (!open) return null;
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 900, background: "rgba(10,20,22,.72)", display: "grid", placeItems: "center", padding: 18 }} onClick={close}>
-      <div className="np-rise" style={{ ...S.card, width: "min(430px,100%)", padding: 24, background: "linear-gradient(145deg,rgba(23,34,38,.96),rgba(58,78,74,.92))", border: "1px solid rgba(200,220,200,.32)" }} onClick={e => e.stopPropagation()}>
+      <div className="np-rise" style={{ ...S.card, width: "min(430px,100%)", padding: 24, background: "linear-gradient(145deg,rgba(24,36,46,.96),rgba(58,78,74,.92))", border: "1px solid rgba(168,213,162,.32)" }} onClick={e => e.stopPropagation()}>
         <button aria-label="Close" onClick={close} style={{ float: "right", background: "none", border: 0, color: "#94a3b8", fontSize: 22, cursor: "pointer" }}>x</button>
         <div style={sectionLabel}>Founding offer</div>
         <h2 style={{ margin: "0 0 8px", fontSize: 28, letterSpacing: -1, lineHeight: 1.05 }}>Want the simple starter plan?</h2>
@@ -376,7 +390,7 @@ function EmailCapturePopup({ onStart }) {
         </p>
         {done ? (
           <div>
-            <div style={{ borderRadius: 14, padding: 14, background: "rgba(200,220,200,.1)", border: "1px solid rgba(200,220,200,.28)", color: "#edf7ef", fontWeight: 900, marginBottom: 14 }}>Saved for this browser. Start with the free preview.</div>
+            <div style={{ borderRadius: 14, padding: 14, background: "rgba(168,213,162,.1)", border: "1px solid rgba(168,213,162,.28)", color: "#F5F1E8", fontWeight: 900, marginBottom: 14 }}>Saved for this browser. Start with the free preview.</div>
             <button onClick={() => { close(); onStart(); }} style={{ ...S.btn, width: "100%" }}>Build my plan</button>
           </div>
         ) : (
@@ -429,10 +443,10 @@ function LegalFooter({ onOpen }) {
 function StickyHomeCTA({ onStart, onPreview }) {
   return (
     <div style={{ position: "fixed", left: 12, right: 12, bottom: 12, zIndex: 40, pointerEvents: "none" }}>
-      <div style={{ width: "min(760px,100%)", margin: "0 auto", padding: "10px", borderRadius: 18, background: "rgba(5,10,18,.86)", border: "1px solid rgba(200,220,200,.22)", boxShadow: "0 18px 50px rgba(0,0,0,.36)", backdropFilter: "blur(16px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, pointerEvents: "auto" }}>
+      <div style={{ width: "min(760px,100%)", margin: "0 auto", padding: "10px", borderRadius: 18, background: "rgba(5,10,18,.86)", border: "1px solid rgba(168,213,162,.22)", boxShadow: "0 18px 50px rgba(0,0,0,.36)", backdropFilter: "blur(16px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, pointerEvents: "auto" }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ color: "#f8fafc", fontWeight: 900, fontSize: 13, lineHeight: 1.2 }}>Ready to build your plan?</div>
-          <div style={{ color: "#b6c4bf", fontSize: 11, lineHeight: 1.35 }}>Real food. Simple structure. No extreme dieting.</div>
+          <div style={{ color: "#B8C4CC", fontSize: 11, lineHeight: 1.35 }}>Real food. Simple structure. No extreme dieting.</div>
         </div>
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button onClick={onPreview} style={{ ...S.sec, padding: "10px 12px", borderRadius: 12, fontSize: 12 }}>Preview</button>
@@ -531,9 +545,9 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
         <div style={{ position: "absolute", inset: 0, zIndex: 5, background: "rgba(10,20,22,.9)", backdropFilter: "blur(10px)", display: "grid", placeItems: "center", padding: 20, textAlign: "center" }}>
           <div>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
-            <Pill>Pro / Elite</Pill>
+            <Pill>Premium</Pill>
             <h3 style={{ margin: "12px 0 8px", fontSize: 18 }}>Recipe locked</h3>
-            <p style={{ color: "#cbd5e1", marginBottom: 16, fontSize: 14, lineHeight: 1.6 }}>Upgrade to Pro to unlock all 11 recipes with full instructions.</p>
+            <p style={{ color: "#cbd5e1", marginBottom: 16, fontSize: 14, lineHeight: 1.6 }}>Unlock Premium to get all 11 recipes with full instructions.</p>
             <button onClick={onUpgrade} style={{ ...S.btn, width: "100%" }}>Unlock Recipes</button>
           </div>
         </div>
@@ -542,7 +556,7 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
         <SafeImg src={recipe.img} alt={recipe.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(10,20,22,.95),rgba(10,20,22,.1))" }} />
         <div style={{ position: "absolute", left: 14, bottom: 14 }}>
-          <Pill color="#c8dcc8">{recipe.category}</Pill>
+          <Pill color="#A8D5A2">{recipe.category}</Pill>
           <h3 style={{ margin: "6px 0 0", fontSize: 18, lineHeight: 1.2 }}>{recipe.title}</h3>
         </div>
       </div>
@@ -563,7 +577,7 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
         {open && (
           <div>
             <div style={{ marginBottom: 12 }}>
-              <div style={{ color: "#c8dcc8", fontSize: 11, fontWeight: 800, textTransform: "uppercase", marginBottom: 6 }}>Ingredients</div>
+              <div style={{ color: "#A8D5A2", fontSize: 11, fontWeight: 800, textTransform: "uppercase", marginBottom: 6 }}>Ingredients</div>
               {recipe.ingredients.map((ing, i) => (
                 <div key={i} style={{ color: "#cbd5e1", fontSize: 13, padding: "5px 0", borderTop: "1px solid rgba(148,163,184,.08)", display: "flex", gap: 8 }}>
                   <span style={{ color: "#475569" }}>-</span>{ing}
@@ -571,16 +585,16 @@ function RecipeCard({ recipe, locked, onUpgrade }) {
               ))}
             </div>
             <div>
-              <div style={{ color: "#c8dcc8", fontSize: 11, fontWeight: 800, textTransform: "uppercase", marginBottom: 6 }}>Instructions</div>
+              <div style={{ color: "#A8D5A2", fontSize: 11, fontWeight: 800, textTransform: "uppercase", marginBottom: 6 }}>Instructions</div>
               {recipe.steps.map((step, i) => (
                 <div key={i} style={{ color: "#cbd5e1", fontSize: 13, padding: "6px 0", borderTop: "1px solid rgba(148,163,184,.08)", display: "flex", gap: 10 }}>
-                  <span style={{ color: "#c8dcc8", fontWeight: 900, flexShrink: 0, minWidth: 18 }}>{i + 1}.</span>{step}
+                  <span style={{ color: "#A8D5A2", fontWeight: 900, flexShrink: 0, minWidth: 18 }}>{i + 1}.</span>{step}
                 </div>
               ))}
             </div>
             {recipe.note && (
-              <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 12, background: "rgba(200,220,200,.08)", border: "1px solid rgba(200,220,200,.18)", color: "#e9f3ef", fontSize: 13, lineHeight: 1.55 }}>
-                <strong style={{ color: "#c8dcc8" }}>Practical note:</strong> {recipe.note}
+              <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 12, background: "rgba(168,213,162,.08)", border: "1px solid rgba(168,213,162,.18)", color: "#F5F1E8", fontSize: 13, lineHeight: 1.55 }}>
+                <strong style={{ color: "#A8D5A2" }}>Practical note:</strong> {recipe.note}
               </div>
             )}
           </div>
@@ -706,7 +720,7 @@ function MealCard({ slot, mealObj, locked, allowSwap, onSwap, onUpgrade }) {
               <div style={{ color: "#94a3b8", fontSize: 12 }}>{item.amount}</div>
               <div style={{ color: "#64748b", fontSize: 11 }}>{item.protein}g protein - {item.carbs}g carbs - {item.fat}g fat</div>
             </div>
-            <strong style={{ color: "#c8dcc8", whiteSpace: "nowrap" }}>{item.cal} cal</strong>
+            <strong style={{ color: "#A8D5A2", whiteSpace: "nowrap" }}>{item.cal} cal</strong>
           </div>
         ))}
         <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
@@ -726,7 +740,7 @@ function CalorieCalculator() {
   const r = { cal: Math.round((Number(c.cal100) || 0) * g), p: Math.round((Number(c.p100) || 0) * g), carb: Math.round((Number(c.c100) || 0) * g), fat: Math.round((Number(c.f100) || 0) * g) };
   return (
     <div style={{ ...S.card, padding: 20, marginTop: 20 }}>
-      <Pill color="#38bdf8">Pro tool</Pill>
+      <Pill color="#A8D5A2">Premium tool</Pill>
       <h3 style={{ margin: "10px 0 4px" }}>Food Calculator</h3>
       <p style={{ color: "#94a3b8", margin: "0 0 14px", fontSize: 14 }}>Look up any food using the label on the package.</p>
       <div style={{ display: "grid", gap: 10 }}>
@@ -747,7 +761,7 @@ function CalorieCalculator() {
 function WorkoutCard({ w }) {
   return (
     <div style={{ ...S.card, padding: 18 }}>
-      <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 800 }}>{w.day}</div>
+      <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 800 }}>{w.day}</div>
       <h3 style={{ margin: "4px 0 6px" }}>{w.title}</h3>
       <p style={{ color: "#94a3b8", fontSize: 13, margin: "0 0 10px" }}>{w.notes}</p>
       {w.exercises.map(ex => (
@@ -762,8 +776,8 @@ function WorkoutCard({ w }) {
 
 const COACH_COPY = {
   free: "You have seen what one day looks like. The full system is 7 days, personalized to your body, with meals you can swap when life gets in the way.",
-  basic: "Your plan is built around your numbers. When you are ready for real-life flexibility - swaps and a food calculator - Pro has you covered.",
-  pro: "Pro is where most people find their groove. If you are also ready to train, Elite adds a custom weekly workout program.",
+  basic: "Your plan is built around your numbers. When you are ready for real-life flexibility, Premium has swaps, recipes, and the food calculator.",
+  pro: "Premium is where most people find their groove: realistic meals, swaps, recipes, and practical tools in one place.",
   elite: "You have the full picture: food and training in one place. Consistency beats perfection every single time.",
 };
 const STRUGGLE_MAP = { late_night: "late-night cravings", takeout: "too much takeout", dont_know: "not knowing what to eat", training_no_results: "training without seeing results", busy: "a busy schedule", boring_diets: "boring diets that never stick" };
@@ -771,10 +785,10 @@ const STRUGGLE_MAP = { late_night: "late-night cravings", takeout: "too much tak
 function NutriCoach({ tier, struggle, onUpgrade }) {
   const struggleText = STRUGGLE_MAP[struggle] || (struggle || "").replace(/_/g, " ");
   return (
-    <div style={{ ...S.card, padding: 20, background: "linear-gradient(135deg,rgba(200,220,200,.08),rgba(23,34,38,.8))", marginTop: 20 }}>
-      <Pill color="#c8dcc8">Your coach says</Pill>
+    <div style={{ ...S.card, padding: 20, background: "linear-gradient(135deg,rgba(168,213,162,.08),rgba(24,36,46,.8))", marginTop: 20 }}>
+      <Pill color="#A8D5A2">Your coach says</Pill>
       <h3 style={{ margin: "10px 0 8px" }}>Built for real people</h3>
-      <p style={{ color: "#e9f3ef", lineHeight: 1.7, margin: "0 0 8px" }}>{COACH_COPY[tier]}</p>
+      <p style={{ color: "#F5F1E8", lineHeight: 1.7, margin: "0 0 8px" }}>{COACH_COPY[tier]}</p>
       {struggleText && <p style={{ color: "#94a3b8", fontSize: 14, margin: "0 0 14px", lineHeight: 1.6 }}>Your biggest challenge is <em style={{ color: "#e2e8f0" }}>{struggleText}</em>. That usually means you need flexibility, not a stricter plan.</p>}
       {tier !== "elite" && <button onClick={onUpgrade} style={S.btn}>{tier === "free" ? "Get the full plan" : "Unlock the next level"}</button>}
     </div>
@@ -821,7 +835,7 @@ function AuthModal({ mode, onClose, onSuccess }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900 }}>{isLogin ? "Sign in" : "Create account"}</h2>
-            <p style={{ margin: "5px 0 0", color: "#b6c4bf", fontSize: 13, lineHeight: 1.45 }}>{isLogin ? "Refresh your paid access and saved plan." : "Use the same email you used at PayPal checkout so your payment can unlock automatically."}</p>
+            <p style={{ margin: "5px 0 0", color: "#B8C4CC", fontSize: 13, lineHeight: 1.45 }}>{isLogin ? "Refresh your paid access and saved plan." : "Use the same email you used at PayPal checkout so your payment can unlock automatically."}</p>
           </div>
           <button aria-label="Close" onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 26, cursor: "pointer" }}>x</button>
         </div>
@@ -931,7 +945,7 @@ export default function App() {
       if (opts.showMessage) {
         setAccessMsg(
           activeTier !== "free"
-            ? `${activeTier.charAt(0).toUpperCase() + activeTier.slice(1)} access is active.`
+            ? `${tierLabel(activeTier)} access is active.`
             : "No active payment found yet. If you just paid, wait a few seconds and refresh again."
         );
       }
@@ -1040,7 +1054,7 @@ export default function App() {
       setAgreed(true);
       setTermsError(false);
       buildAndOpenPlan(tier, mergedForm);
-      setAccessMsg(`Welcome back. Your ${tier.charAt(0).toUpperCase() + tier.slice(1)} plan is loaded.`);
+        setAccessMsg(`Welcome back. Your ${tierLabel(tier)} plan is loaded.`);
       return;
     }
     setPlan(null);
@@ -1048,7 +1062,7 @@ export default function App() {
     setAgreed(false);
     setTermsError(false);
     setScreen("onboarding");
-    setAccessMsg(`${tier.charAt(0).toUpperCase() + tier.slice(1)} access is active. Finish your details once to build your plan.`);
+    setAccessMsg(`${tierLabel(tier)} access is active. Finish your details once to build your plan.`);
   }
 
   async function refreshAndOpenPaidPlan(currentUser = user) {
@@ -1105,8 +1119,8 @@ export default function App() {
             <Pill>Real food. Realistic progress.</Pill>
             {user ? (
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <span style={{ color: "#b6c4bf", fontSize: 12 }}>{userEmail}</span>
-                {isPaid(accessTier) && <Pill color="#edf7ef">{accessTier.charAt(0).toUpperCase() + accessTier.slice(1)} active</Pill>}
+                <span style={{ color: "#B8C4CC", fontSize: 12 }}>{userEmail}</span>
+                {isPaid(accessTier) && <Pill color="#F5F1E8">{tierLabel(accessTier)} active</Pill>}
                 <button onClick={() => refreshAndOpenPaidPlan(user)} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13, opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>{checkingAccess ? "Checking..." : "Refresh access"}</button>
                 <button onClick={handleSignOut} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13 }}>Sign out</button>
               </div>
@@ -1115,12 +1129,12 @@ export default function App() {
             )}
           </div>
         </header>
-        {accessMsg && <div style={{ borderRadius: 12, padding: "10px 14px", background: accessMsg.includes("active") ? "rgba(200,220,200,.12)" : "rgba(125,167,174,.1)", border: "1px solid " + (accessMsg.includes("active") ? "rgba(200,220,200,.32)" : "rgba(125,167,174,.25)"), marginBottom: 14, fontSize: 13, color: accessMsg.includes("active") ? "#edf7ef" : "#e9f3ef" }}>{accessMsg}</div>}
+        {accessMsg && <div style={{ borderRadius: 12, padding: "10px 14px", background: accessMsg.includes("active") ? "rgba(168,213,162,.12)" : "rgba(107,143,113,.1)", border: "1px solid " + (accessMsg.includes("active") ? "rgba(168,213,162,.32)" : "rgba(107,143,113,.25)"), marginBottom: 14, fontSize: 13, color: accessMsg.includes("active") ? "#F5F1E8" : "#F5F1E8" }}>{accessMsg}</div>}
         {user && isPaid(accessTier) && (
-          <div style={{ borderRadius: 16, padding: "14px 16px", background: "rgba(200,220,200,.1)", border: "1px solid rgba(200,220,200,.28)", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ borderRadius: 16, padding: "14px 16px", background: "rgba(168,213,162,.1)", border: "1px solid rgba(168,213,162,.28)", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <div>
-              <div style={{ color: "#edf7ef", fontWeight: 900, fontSize: 14 }}>Your {accessTier.charAt(0).toUpperCase() + accessTier.slice(1)} access is ready.</div>
-              <div style={{ color: "#b6c4bf", fontSize: 12, lineHeight: 1.5 }}>Build or update your plan anytime from this account.</div>
+              <div style={{ color: "#F5F1E8", fontWeight: 900, fontSize: 14 }}>Your {tierLabel(accessTier)} access is ready.</div>
+              <div style={{ color: "#B8C4CC", fontSize: 12, lineHeight: 1.5 }}>Build or update your plan anytime from this account.</div>
             </div>
             <button onClick={() => setScreen("onboarding")} style={{ ...S.btn, padding: "10px 16px", fontSize: 13 }}>Build my plan</button>
           </div>
@@ -1138,11 +1152,11 @@ export default function App() {
         </section>
 
         {/* TikTok visitor bridge */}
-        <div className="np-rise" style={{ ...S.card, padding: "18px 20px", marginBottom: 34, background: "linear-gradient(135deg,rgba(200,220,200,.1),rgba(58,78,74,.56))", border: "1px solid rgba(200,220,200,.24)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 18, alignItems: "center" }}>
+        <div className="np-rise" style={{ ...S.card, padding: "18px 20px", marginBottom: 34, background: "linear-gradient(135deg,rgba(168,213,162,.1),rgba(58,78,74,.56))", border: "1px solid rgba(168,213,162,.24)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 18, alignItems: "center" }}>
           <div>
             <div style={sectionLabel}>From link in bio to real life</div>
             <h2 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4vw,32px)", letterSpacing: -1, lineHeight: 1.08 }}>If TikTok brought you here, this is the simple version.</h2>
-            <p style={{ color: "#e9f3ef", fontSize: 15, lineHeight: 1.7, margin: 0 }}>
+            <p style={{ color: "#F5F1E8", fontSize: 15, lineHeight: 1.7, margin: 0 }}>
               NutriPlan is for people who want fast clarity without extreme dieting: real food meal plans, realistic progress, simple structure, and meals that fit busy American life.
             </p>
           </div>
@@ -1157,16 +1171,16 @@ export default function App() {
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px 24px", marginBottom: 40 }}>
           {["No extreme diets", "Real food meals", "Built for busy people", "Results vary", "Not medical advice"].map(t => (
             <span key={t} style={{ color: "#64748b", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ color: "#c8dcc8" }}>✓</span>{t}
+              <span style={{ color: "#A8D5A2" }}>✓</span>{t}
             </span>
           ))}
         </div>
 
         {/* Problem / mission */}
-        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(200,220,200,.09),rgba(23,34,38,.72))" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Why NutriPlan was built</div>
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(168,213,162,.09),rgba(24,36,46,.72))" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Why NutriPlan was built</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,36px)", letterSpacing: -1, lineHeight: 1.08 }}>You are not lazy. Your plan is probably broken.</h2>
-          <p style={{ color: "#e9f3ef", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+          <p style={{ color: "#F5F1E8", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
             NutriPlan was built for people who are tired of extreme diets, confusing advice, and plans that look perfect on paper but collapse in real life. Most people do not fail because they are weak. They fail because their plan does not match their work, cravings, stress, weekends, family meals, and real schedule.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginBottom: 18 }}>
@@ -1176,22 +1190,22 @@ export default function App() {
               </div>
             ))}
           </div>
-          <div style={{ padding: "16px 18px", borderRadius: 16, background: "rgba(248,250,252,.06)", border: "1px solid rgba(200,220,200,.18)" }}>
+          <div style={{ padding: "16px 18px", borderRadius: 16, background: "rgba(248,250,252,.06)", border: "1px solid rgba(168,213,162,.18)" }}>
             <div style={{ color: "#f8fafc", fontSize: 18, fontWeight: 900, marginBottom: 6 }}>Our mission is simple.</div>
-            <p style={{ color: "#b6c4bf", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+            <p style={{ color: "#B8C4CC", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
               To help people eat better, feel better, build muscle, lose fat, and live healthier without turning food into a prison. Real food. Real life. Real progress.
             </p>
           </div>
         </div>
 
         {/* Who this is for */}
-        <div style={{ ...S.card, padding: "22px 26px", marginBottom: 36, background: "rgba(23,34,38,.6)" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Who this is for</div>
+        <div style={{ ...S.card, padding: "22px 26px", marginBottom: 36, background: "rgba(24,36,46,.6)" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Who this is for</div>
           <p style={{ color: "#f8fafc", fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>This is not about being perfect. This is about becoming consistent.</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "8px 24px" }}>
             {HOME_AUDIENCE.map(item => (
               <div key={item} style={{ color: "#cbd5e1", fontSize: 14, display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <span style={{ color: "#c8dcc8", flexShrink: 0, marginTop: 1 }}>-&gt;</span>{item}
+                <span style={{ color: "#A8D5A2", flexShrink: 0, marginTop: 1 }}>-&gt;</span>{item}
               </div>
             ))}
           </div>
@@ -1199,23 +1213,23 @@ export default function App() {
 
         {/* How it works */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>How it works</div>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>How it works</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
             {HOW_IT_WORKS.map(([title, body], i) => (
-              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(23,34,38,.58)" }}>
-                <Pill color="#c8dcc8">Step {i + 1}</Pill>
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(24,36,46,.58)" }}>
+                <Pill color="#A8D5A2">Step {i + 1}</Pill>
                 <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>{title}</h3>
-                <p style={{ margin: 0, color: "#b6c4bf", fontSize: 14, lineHeight: 1.6 }}>{body}</p>
+                <p style={{ margin: 0, color: "#B8C4CC", fontSize: 14, lineHeight: 1.6 }}>{body}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Real food */}
-        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "rgba(23,34,38,.6)" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Recipes and real food</div>
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "rgba(24,36,46,.6)" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Recipes and real food</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>Healthy food should taste like something you actually want to eat.</h2>
-          <p style={{ color: "#e9f3ef", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+          <p style={{ color: "#F5F1E8", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
             Inside NutriPlan, meals are built from real ingredients: high-protein breakfasts, filling lunches, balanced dinners, smart snacks, and food that can fit busy days. No boring diet food. No fake perfection. Just better meals that help you move toward your goal.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
@@ -1233,57 +1247,57 @@ export default function App() {
           <h2 style={{ margin: "0 auto 16px", textAlign: "center", maxWidth: 760, fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The food should feel familiar before it feels optimized.</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14 }}>
             {RECIPE_PREVIEWS.map(([title, body, note]) => (
-              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "linear-gradient(180deg,rgba(248,250,252,.06),rgba(23,34,38,.68))" }}>
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "linear-gradient(180deg,rgba(248,250,252,.06),rgba(24,36,46,.68))" }}>
                 <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>{title}</h3>
-                <p style={{ color: "#e9f3ef", fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>{body}</p>
-                <div style={{ borderTop: "1px solid rgba(148,163,184,.12)", paddingTop: 10, color: "#b6c4bf", fontSize: 12, lineHeight: 1.55 }}>{note}</div>
+                <p style={{ color: "#F5F1E8", fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>{body}</p>
+                <div style={{ borderTop: "1px solid rgba(148,163,184,.12)", paddingTop: 10, color: "#B8C4CC", fontSize: 12, lineHeight: 1.55 }}>{note}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* What you get */}
-        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(58,78,74,.48),rgba(23,34,38,.72))" }}>
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(58,78,74,.48),rgba(24,36,46,.72))" }}>
           <div style={sectionLabel}>What you actually get</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>A clear food system, not just a calorie number.</h2>
-          <p style={{ color: "#b6c4bf", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
+          <p style={{ color: "#B8C4CC", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
             The best nutrition products reduce decision fatigue. NutriPlan gives you structure before the week gets busy, while keeping the food normal enough to repeat.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 12 }}>
             {VALUE_STACK.map(([title, body]) => (
               <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 16, padding: 16, background: "rgba(10,20,22,.32)" }}>
                 <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
-                <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.6, margin: "7px 0 0" }}>{body}</p>
+                <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.6, margin: "7px 0 0" }}>{body}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Philosophy */}
-        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(125,167,174,.08),rgba(23,34,38,.7))" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>The NutriPlan philosophy</div>
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(107,143,113,.08),rgba(24,36,46,.7))" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>The NutriPlan philosophy</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The best plan is not the hardest plan.</h2>
-          <p style={{ color: "#e9f3ef", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
+          <p style={{ color: "#F5F1E8", fontSize: 16, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 820 }}>
             The best plan is the one you can actually follow: real meals, flexible choices, simple structure, enough protein, smart carbs, better habits, and food that still feels enjoyable.
           </p>
-          <p style={{ color: "#b6c4bf", fontSize: 14, lineHeight: 1.7, margin: 0, maxWidth: 820 }}>
+          <p style={{ color: "#B8C4CC", fontSize: 14, lineHeight: 1.7, margin: 0, maxWidth: 820 }}>
             Health should not feel like punishment. Your plan should support your life, not take it over.
           </p>
         </div>
 
         {/* About / story */}
-        <div className="np-rise" style={{ ...S.card, padding: "28px", marginBottom: 36, background: "linear-gradient(135deg,rgba(248,250,252,.07),rgba(23,34,38,.68))" }}>
+        <div className="np-rise" style={{ ...S.card, padding: "28px", marginBottom: 36, background: "linear-gradient(135deg,rgba(248,250,252,.07),rgba(24,36,46,.68))" }}>
           <div style={sectionLabel}>About us</div>
           <h2 style={{ margin: "0 0 12px", fontSize: "clamp(25px,4vw,36px)", letterSpacing: -1.2, lineHeight: 1.08 }}>Built for people who are tired of starting over.</h2>
-          <p style={{ color: "#e9f3ef", fontSize: 16, lineHeight: 1.75, margin: "0 0 14px", maxWidth: 850 }}>
+          <p style={{ color: "#F5F1E8", fontSize: 16, lineHeight: 1.75, margin: "0 0 14px", maxWidth: 850 }}>
             NutriPlan exists because modern diet culture makes healthy living feel harder than it needs to be. People are told to cut everything out, track every bite perfectly, and act like normal life never happens.
           </p>
-          <p style={{ color: "#b6c4bf", fontSize: 14, lineHeight: 1.75, margin: 0, maxWidth: 850 }}>
+          <p style={{ color: "#B8C4CC", fontSize: 14, lineHeight: 1.75, margin: 0, maxWidth: 850 }}>
             We believe better nutrition should feel calm, practical, and human. Real meals. Better portions. Enough protein. Simple structure. A plan that helps you feel lighter, stronger, and more in control without turning food into a punishment.
           </p>
-          <div style={{ marginTop: 18, padding: "16px 18px", borderRadius: 16, background: "rgba(200,220,200,.08)", border: "1px solid rgba(200,220,200,.18)" }}>
+          <div style={{ marginTop: 18, padding: "16px 18px", borderRadius: 16, background: "rgba(168,213,162,.08)", border: "1px solid rgba(168,213,162,.18)" }}>
             <strong style={{ color: "#f8fafc", fontSize: 15 }}>This is not about hating your body.</strong>
-            <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.65, margin: "6px 0 0" }}>
+            <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.65, margin: "6px 0 0" }}>
               It is about taking care of yourself with food that feels normal, habits that fit real life, and structure that helps you stop restarting every Monday.
             </p>
           </div>
@@ -1292,14 +1306,14 @@ export default function App() {
         {/* Written testimonials */}
         <div style={{ marginBottom: 36 }}>
           <div style={{ ...sectionLabel, textAlign: "center" }}>Early feedback we are looking for</div>
-          <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.6, textAlign: "center", maxWidth: 680, margin: "0 auto 16px" }}>
+          <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.6, textAlign: "center", maxWidth: 680, margin: "0 auto 16px" }}>
             These are not published customer reviews. They describe the experience NutriPlan is intentionally built to create.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14 }}>
             {TESTIMONIALS.map((quote) => (
-              <div key={quote} className="np-rise" style={{ ...S.card, padding: 20, borderRadius: 18, background: "rgba(23,34,38,.58)" }}>
+              <div key={quote} className="np-rise" style={{ ...S.card, padding: 20, borderRadius: 18, background: "rgba(24,36,46,.58)" }}>
                 <div style={{ color: "#f8fafc", fontSize: 34, lineHeight: 1, marginBottom: 8 }}>"</div>
-                <p style={{ color: "#e9f3ef", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px" }}>{quote}</p>
+                <p style={{ color: "#F5F1E8", fontSize: 14, lineHeight: 1.7, margin: "0 0 14px" }}>{quote}</p>
                 <div style={{ color: "#64748b", fontSize: 11, marginTop: 4 }}>Positioning quote, not a verified review.</div>
               </div>
             ))}
@@ -1307,17 +1321,17 @@ export default function App() {
         </div>
 
         {/* Transformation framing */}
-        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(200,220,200,.08),rgba(58,78,74,.34))" }}>
+        <div style={{ ...S.card, padding: "26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(168,213,162,.08),rgba(58,78,74,.34))" }}>
           <div style={sectionLabel}>Before / after, without fake promises</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(24px,4vw,34px)", letterSpacing: -1, lineHeight: 1.08 }}>The real transformation is feeling organized around food.</h2>
-          <p style={{ color: "#b6c4bf", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
+          <p style={{ color: "#B8C4CC", fontSize: 14, lineHeight: 1.7, margin: "0 0 18px", maxWidth: 820 }}>
             NutriPlan does not promise dramatic body changes or use fake photos. The goal is a calmer, more consistent relationship with food that can support fat loss, muscle, and better daily energy over time.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
             {TRANSFORMATIONS.map(([title, body], i) => (
-              <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 16, padding: 16, background: i === 2 ? "rgba(200,220,200,.1)" : "rgba(10,20,22,.35)" }}>
-                <Pill color={i === 2 ? "#edf7ef" : "#c8dcc8"}>{title}</Pill>
-                <p style={{ color: i === 2 ? "#edf7ef" : "#cbd5e1", fontSize: 14, lineHeight: 1.6, margin: "12px 0 0", fontWeight: 700 }}>{body}</p>
+              <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 16, padding: 16, background: i === 2 ? "rgba(168,213,162,.1)" : "rgba(10,20,22,.35)" }}>
+                <Pill color={i === 2 ? "#F5F1E8" : "#A8D5A2"}>{title}</Pill>
+                <p style={{ color: i === 2 ? "#F5F1E8" : "#cbd5e1", fontSize: 14, lineHeight: 1.6, margin: "12px 0 0", fontWeight: 700 }}>{body}</p>
               </div>
             ))}
           </div>
@@ -1325,53 +1339,58 @@ export default function App() {
 
         {/* Micro trust */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Small reasons this feels different</div>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12, textAlign: "center" }}>Small reasons this feels different</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
             {MICRO_TRUST.map(([title, body]) => (
-              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(23,34,38,.56)" }}>
+              <div key={title} style={{ ...S.card, padding: 18, borderRadius: 18, background: "rgba(24,36,46,.56)" }}>
                 <h3 style={{ margin: "0 0 8px", fontSize: 16 }}>{title}</h3>
-                <p style={{ margin: 0, color: "#b6c4bf", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
+                <p style={{ margin: 0, color: "#B8C4CC", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Retention psychology */}
-        <div style={{ ...S.card, padding: "24px 26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(200,220,200,.08),rgba(23,34,38,.68))" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Built for the day after you buy</div>
+        <div style={{ ...S.card, padding: "24px 26px", marginBottom: 36, background: "linear-gradient(135deg,rgba(168,213,162,.08),rgba(24,36,46,.68))" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Built for the day after you buy</div>
           <h2 style={{ margin: "0 0 10px", fontSize: "clamp(23px,4vw,32px)", letterSpacing: -1, lineHeight: 1.1 }}>Progress is easier when the next step is small.</h2>
-          <p style={{ color: "#e9f3ef", fontSize: 15, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 800 }}>
+          <p style={{ color: "#F5F1E8", fontSize: 15, lineHeight: 1.7, margin: "0 0 16px", maxWidth: 800 }}>
             NutriPlan is designed to feel supportive after checkout too: simple habits, weekly check-ins, realistic meals, and reminders that one imperfect meal does not ruin the week.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
             {DAILY_SUPPORT.map(([title, body]) => (
               <div key={title} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: "12px 14px", background: "rgba(10,20,22,.35)" }}>
                 <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
-                <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.55, margin: "6px 0 0" }}>{body}</p>
+                <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.55, margin: "6px 0 0" }}>{body}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Plan cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 14 }}>
-          {PLANS.map(p => (
-            <div key={p.id} style={{ ...S.card, padding: 20, position: "relative", border: p.recommended ? "1px solid rgba(200,220,200,.5)" : p.premium ? "1px solid rgba(147,197,253,.45)" : S.card.border, background: p.recommended ? "linear-gradient(180deg,rgba(200,220,200,.11),rgba(23,34,38,.8))" : p.premium ? "linear-gradient(180deg,rgba(147,197,253,.1),rgba(23,34,38,.8))" : S.card.background }}>
-              {p.recommended && <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: "#c8dcc8", color: "#10201d", fontSize: 11, fontWeight: 900, padding: "4px 14px", borderRadius: 999, whiteSpace: "nowrap" }}>MOST POPULAR</div>}
+        {/* Pricing */}
+        <div style={{ textAlign: "center", margin: "8px auto 18px", maxWidth: 720 }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 8 }}>Simple pricing</div>
+          <h2 style={{ margin: "0 0 8px", fontSize: "clamp(28px,5vw,44px)", lineHeight: 1.05, letterSpacing: -1.5 }}>Try it free, then unlock Premium.</h2>
+          <p style={{ color: "#B8C4CC", fontSize: 15, lineHeight: 1.65, margin: 0 }}>No confusing tiers on the landing page. One free preview and one clear paid nutrition plan.</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 16, alignItems: "stretch" }}>
+          {PRICING_PLANS.map(p => (
+            <div key={p.id} style={{ ...S.card, padding: 22, position: "relative", border: p.recommended ? "1px solid rgba(123,198,123,.55)" : S.card.border, background: p.recommended ? "linear-gradient(180deg,rgba(123,198,123,.14),rgba(24,36,46,.86))" : "rgba(24,36,46,.66)" }}>
+              {p.recommended && <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: "#D6B36A", color: "#0F1720", fontSize: 11, fontWeight: 900, padding: "4px 14px", borderRadius: 999, whiteSpace: "nowrap" }}>FOUNDING OFFER</div>}
               <Pill>{p.badge}</Pill>
               <h2 style={{ margin: "10px 0 2px", fontSize: 24 }}>{p.name}</h2>
               <div style={{ fontSize: 34, fontWeight: 900, marginBottom: 4 }}>{p.price}</div>
-              {p.id !== "free" && <div style={{ color: p.recommended ? "#edf7ef" : "#b6c4bf", fontSize: 12, fontWeight: 800, marginBottom: 8 }}>{p.recommended ? "Best starting point" : "One-time digital access"}</div>}
+              {p.id !== "free" && <div style={{ color: "#F5F1E8", fontSize: 12, fontWeight: 800, marginBottom: 8 }}>One-time digital access. Not a subscription.</div>}
               <p style={{ color: "#94a3b8", minHeight: 48, fontSize: 14, margin: "0 0 14px", lineHeight: 1.55 }}>{p.desc}</p>
-              {p.features.map(f => <div key={f} style={{ color: "#cbd5e1", fontSize: 13, marginBottom: 8, display: "flex", gap: 8, alignItems: "flex-start" }}><span style={{ color: "#c8dcc8", flexShrink: 0 }}>✓</span>{f}</div>)}
+              {p.features.map(f => <div key={f} style={{ color: "#cbd5e1", fontSize: 13, marginBottom: 8, display: "flex", gap: 8, alignItems: "flex-start" }}><span style={{ color: "#A8D5A2", flexShrink: 0 }}>✓</span>{f}</div>)}
               <button onClick={() => choosePlan(p.id)} style={{ ...(p.id === "free" ? S.sec : S.btn), width: "100%", marginTop: 16 }}>
-                {p.id === "free" ? "Try free preview" : p.recommended ? "Build my Pro plan - " + p.price : "Choose " + p.name + " - " + p.price}
+                {p.id === "free" ? "Try free preview" : "Unlock Premium - " + p.price}
               </button>
             </div>
           ))}
         </div>
-        <div style={{ ...S.card, padding: "22px 26px", marginTop: 24, background: "rgba(23,34,38,.58)" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Good to know</div>
+        <div style={{ ...S.card, padding: "22px 26px", marginTop: 24, background: "rgba(24,36,46,.58)" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Good to know</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
             {[
               ["No extreme dieting", "NutriPlan uses moderate calorie targets and normal meals. It is built for consistency, not punishment."],
@@ -1380,16 +1399,16 @@ export default function App() {
             ].map(([title, body]) => (
               <div key={title}>
                 <h3 style={{ margin: "0 0 6px", fontSize: 16 }}>{title}</h3>
-                <p style={{ margin: 0, color: "#b6c4bf", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
+                <p style={{ margin: 0, color: "#B8C4CC", fontSize: 13, lineHeight: 1.6 }}>{body}</p>
               </div>
             ))}
           </div>
         </div>
         <FAQSection />
-        <div style={{ textAlign: "center", marginTop: 36, padding: "30px 20px", borderRadius: 24, background: "linear-gradient(135deg,rgba(200,220,200,.12),rgba(125,167,174,.09))", border: "1px solid rgba(200,220,200,.22)" }}>
-          <div style={{ color: "#c8dcc8", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Ready to stop guessing?</div>
+        <div style={{ textAlign: "center", marginTop: 36, padding: "30px 20px", borderRadius: 24, background: "linear-gradient(135deg,rgba(168,213,162,.12),rgba(107,143,113,.09))", border: "1px solid rgba(168,213,162,.22)" }}>
+          <div style={{ color: "#A8D5A2", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Ready to stop guessing?</div>
           <h2 style={{ margin: "0 auto 12px", maxWidth: 720, fontSize: "clamp(26px,5vw,44px)", letterSpacing: -1.5, lineHeight: 1.05 }}>Build a plan that fits your real life.</h2>
-          <p style={{ color: "#b6c4bf", fontSize: 16, lineHeight: 1.65, margin: "0 auto 22px", maxWidth: 620 }}>
+          <p style={{ color: "#B8C4CC", fontSize: 16, lineHeight: 1.65, margin: "0 auto 22px", maxWidth: 620 }}>
             Start with real food, clear structure, and a nutrition system designed for consistency instead of punishment.
           </p>
           <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "15px 30px", fontSize: 16 }}>Build my plan today</button>
@@ -1412,13 +1431,13 @@ export default function App() {
         <LaunchBanner />
         <div style={{ ...S.card, padding: 28, marginTop: 18 }}>
           <Pill>{selPlan.badge}</Pill>
-          <h1 style={{ fontSize: 32, letterSpacing: -1, margin: "14px 0 6px" }}>{selPlan.name} Plan - {selPlan.price}</h1>
-          <p style={{ color: "#94a3b8", lineHeight: 1.65, margin: "0 0 20px" }}>Your plan is built around your body and your life. No extreme diets. No shame.</p>
+          <h1 style={{ fontSize: 32, letterSpacing: -1, margin: "14px 0 6px" }}>{selPlan.name} - {selPlan.price}</h1>
+          <p style={{ color: "#94a3b8", lineHeight: 1.65, margin: "0 0 20px" }}>One-time digital access through the current PayPal link. Your plan is built around your body and your life. No extreme diets. No shame.</p>
           <div style={{ background: "rgba(10,20,22,.5)", borderRadius: 14, padding: "14px 16px", marginBottom: 22 }}>
-            {selPlan.features.map(f => <div key={f} style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 8, display: "flex", gap: 8 }}><span style={{ color: "#c8dcc8" }}>✓</span>{f}</div>)}
+            {selPlan.features.map(f => <div key={f} style={{ color: "#cbd5e1", fontSize: 14, marginBottom: 8, display: "flex", gap: 8 }}><span style={{ color: "#A8D5A2" }}>✓</span>{f}</div>)}
           </div>
           <a href={PAYPAL[selectedTier] || "#"} target="_blank" rel="noreferrer noopener" style={{ ...S.btn, display: "block", textAlign: "center", textDecoration: "none", fontSize: 16, padding: "16px", marginBottom: 8 }}>
-            Secure Checkout - {selPlan.price}
+            Secure checkout - {selPlan.price}
           </a>
           <p style={{ color: "#475569", fontSize: 12, textAlign: "center", margin: "0 0 10px", lineHeight: 1.5 }}>Secure payment. Card, Apple Pay, and other options may be available at checkout.</p>
           <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "0 0 22px", lineHeight: 1.55, padding: "10px 14px", background: "rgba(10,20,22,.4)", borderRadius: 10, border: "1px solid rgba(148,163,184,.08)" }}>
@@ -1430,25 +1449,25 @@ export default function App() {
               ["2", "Sign in with the same email"],
               ["3", "Refresh access and build your plan"],
             ].map(([num, text]) => (
-              <div key={num} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: 12, background: "rgba(23,34,38,.5)" }}>
-                <div style={{ width: 26, height: 26, borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(200,220,200,.16)", color: "#edf7ef", fontWeight: 900, marginBottom: 8 }}>{num}</div>
+              <div key={num} style={{ border: "1px solid rgba(148,163,184,.12)", borderRadius: 14, padding: 12, background: "rgba(24,36,46,.5)" }}>
+                <div style={{ width: 26, height: 26, borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(168,213,162,.16)", color: "#F5F1E8", fontWeight: 900, marginBottom: 8 }}>{num}</div>
                 <div style={{ color: "#cbd5e1", fontSize: 12, lineHeight: 1.45, fontWeight: 800 }}>{text}</div>
               </div>
             ))}
           </div>
           <div style={{ height: 1, background: "rgba(148,163,184,.1)", marginBottom: 22 }} />
-          <div style={{ borderRadius: 14, padding: "14px 16px", background: "rgba(125,167,174,.08)", border: "1px solid rgba(125,167,174,.18)", marginBottom: 16 }}>
-            <div style={{ color: "#e9f3ef", fontSize: 13, fontWeight: 900, marginBottom: 5 }}>After checkout, sign in and refresh access.</div>
+          <div style={{ borderRadius: 14, padding: "14px 16px", background: "rgba(107,143,113,.08)", border: "1px solid rgba(107,143,113,.18)", marginBottom: 16 }}>
+            <div style={{ color: "#F5F1E8", fontSize: 13, fontWeight: 900, marginBottom: 5 }}>After checkout, sign in and refresh access.</div>
             <div style={{ color: "#94a3b8", fontSize: 12, lineHeight: 1.55 }}>Use the same email you used at PayPal checkout. PayPal updates your Supabase profile through the webhook, then Refresh access unlocks your paid plan automatically.</div>
           </div>
           {user ? (
             <div style={{ display: "grid", gap: 10 }}>
-              <div style={{ color: "#b6c4bf", fontSize: 12 }}>Signed in as {userEmail}</div>
+              <div style={{ color: "#B8C4CC", fontSize: 12 }}>Signed in as {userEmail}</div>
               <button onClick={() => refreshAndOpenPaidPlan(user)} style={{ ...S.btn, width: "100%", opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>
                 {checkingAccess ? "Checking payment..." : "Check payment / refresh access"}
               </button>
-              {accessMsg && <p style={{ color: accessMsg.includes("active") ? "#edf7ef" : "#e9f3ef", fontSize: 13, margin: 0, lineHeight: 1.5 }}>{accessMsg}</p>}
-              {isPaid(accessTier) && <button onClick={() => setScreen("onboarding")} style={{ ...S.sec, width: "100%", borderColor: "rgba(200,220,200,.35)", color: "#f8fafc" }}>Continue with {accessTier.charAt(0).toUpperCase() + accessTier.slice(1)}</button>}
+              {accessMsg && <p style={{ color: accessMsg.includes("active") ? "#F5F1E8" : "#F5F1E8", fontSize: 13, margin: 0, lineHeight: 1.5 }}>{accessMsg}</p>}
+              {isPaid(accessTier) && <button onClick={() => setScreen("onboarding")} style={{ ...S.sec, width: "100%", borderColor: "rgba(168,213,162,.35)", color: "#f8fafc" }}>Continue with {tierLabel(accessTier)}</button>}
             </div>
           ) : (
             <button onClick={() => setAuthModal("login")} style={{ ...S.authBtn, width: "100%", borderRadius: 14, padding: "14px 18px" }}>Sign in / create account to activate access</button>
@@ -1575,11 +1594,11 @@ export default function App() {
             </div>
           )}
           <div style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: 16, background: "rgba(10,20,22,.5)", borderRadius: 12, border: termsError ? "1px solid #f87171" : "1px solid rgba(148,163,184,.12)" }}>
-            <input type="checkbox" id="terms-agree" checked={agreedToTerms} onChange={e => { setAgreed(e.target.checked); setTermsError(false); }} style={{ marginTop: 3, accentColor: "#c8dcc8", width: 18, height: 18, flexShrink: 0, cursor: "pointer" }} />
+            <input type="checkbox" id="terms-agree" checked={agreedToTerms} onChange={e => { setAgreed(e.target.checked); setTermsError(false); }} style={{ marginTop: 3, accentColor: "#A8D5A2", width: 18, height: 18, flexShrink: 0, cursor: "pointer" }} />
             <label htmlFor="terms-agree" style={{ color: "#94a3b8", fontSize: 13, lineHeight: 1.6, cursor: "pointer" }}>
               I understand that NutriPlan is not medical advice. Results vary and there is no guarantee of weight loss. I am responsible for my own health decisions and will consult a healthcare professional before making significant changes to my diet or exercise routine. I agree to the{" "}
-              <span style={{ color: "#c8dcc8", textDecoration: "underline", cursor: "pointer" }} onClick={() => setLegalModal("terms")}>Terms of Service</span>{" "}and{" "}
-              <span style={{ color: "#c8dcc8", textDecoration: "underline", cursor: "pointer" }} onClick={() => setLegalModal("privacy")}>Privacy Policy</span>.
+              <span style={{ color: "#A8D5A2", textDecoration: "underline", cursor: "pointer" }} onClick={() => setLegalModal("terms")}>Terms of Service</span>{" "}and{" "}
+              <span style={{ color: "#A8D5A2", textDecoration: "underline", cursor: "pointer" }} onClick={() => setLegalModal("privacy")}>Privacy Policy</span>.
             </label>
           </div>
           {termsError && <p style={{ color: "#f87171", fontSize: 13, margin: 0 }}>Please read and agree to the terms before continuing.</p>}
@@ -1615,20 +1634,20 @@ export default function App() {
               )}
             </div>
           </div>
-          {saveMsg && <div style={{ borderRadius: 12, padding: "10px 16px", background: saveMsg.includes("saved") ? "rgba(200,220,200,.1)" : "rgba(248,113,113,.1)", border: "1px solid " + (saveMsg.includes("saved") ? "rgba(200,220,200,.3)" : "rgba(248,113,113,.3)"), marginBottom: 14, fontSize: 13, color: saveMsg.includes("saved") ? "#edf7ef" : "#fca5a5" }}>{saveMsg}</div>}
+          {saveMsg && <div style={{ borderRadius: 12, padding: "10px 16px", background: saveMsg.includes("saved") ? "rgba(168,213,162,.1)" : "rgba(248,113,113,.1)", border: "1px solid " + (saveMsg.includes("saved") ? "rgba(168,213,162,.3)" : "rgba(248,113,113,.3)"), marginBottom: 14, fontSize: 13, color: saveMsg.includes("saved") ? "#F5F1E8" : "#fca5a5" }}>{saveMsg}</div>}
           {!isPaid(plan.tier) && <LaunchBanner />}
           {user && isPaid(plan.tier) && (
-            <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(200,220,200,.08)", border: "1px solid rgba(200,220,200,.22)", marginBottom: 16, color: "#edf7ef", fontSize: 13, lineHeight: 1.55 }}>
+            <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(168,213,162,.08)", border: "1px solid rgba(168,213,162,.22)", marginBottom: 16, color: "#F5F1E8", fontSize: 13, lineHeight: 1.55 }}>
               Your paid access is active, so checkout offers are hidden here. Use this page to build, edit, and save your plan.
             </div>
           )}
           <div style={{ marginTop: 16, marginBottom: 18 }}>
-            <Pill color="#c8dcc8">{plan.tier.charAt(0).toUpperCase() + plan.tier.slice(1)} plan</Pill>
+            <Pill color="#A8D5A2">{tierLabel(plan.tier)} plan</Pill>
             <h1 style={{ fontSize: "clamp(30px,6vw,48px)", letterSpacing: -2, margin: "14px 0 6px", lineHeight: 1.05 }}>Your plan for real life.</h1>
             <p style={{ color: "#94a3b8", margin: 0 }}>Consistency over perfection. Normal food, smarter portions.</p>
           </div>
           {planReady && (
-            <div style={{ borderRadius: 14, padding: "14px 18px", background: "rgba(200,220,200,.08)", border: "1px solid rgba(200,220,200,.25)", marginBottom: 16, fontSize: 14, color: "#edf7ef", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ borderRadius: 14, padding: "14px 18px", background: "rgba(168,213,162,.08)", border: "1px solid rgba(168,213,162,.25)", marginBottom: 16, fontSize: 14, color: "#F5F1E8", display: "flex", alignItems: "center", gap: 10 }}>
               <span>✓</span> Your plan is ready. Scroll down to see your meals.
             </div>
           )}
@@ -1639,11 +1658,11 @@ export default function App() {
             <MacroBox icon="🥑" val={plan.fat + "g"} label="fat" />
             {plan.bfp && <MacroBox icon="📏" val={plan.bfp + "%"} label="body fat" />}
           </div>
-          <p style={{ color: "#475569", fontSize: 11, lineHeight: 1.55, margin: "0 0 20px", padding: "10px 14px", background: "rgba(23,34,38,.5)", borderRadius: 10, border: "1px solid rgba(148,163,184,.08)" }}>
+          <p style={{ color: "#475569", fontSize: 11, lineHeight: 1.55, margin: "0 0 20px", padding: "10px 14px", background: "rgba(24,36,46,.5)", borderRadius: 10, border: "1px solid rgba(148,163,184,.08)" }}>
             Calories and macros are estimates for educational purposes only. Individual needs vary. Consult a qualified professional before making major diet or fitness changes.
           </p>
-          <div style={{ ...S.card, padding: 18, marginBottom: 20, background: "rgba(23,34,38,.58)" }}>
-            <Pill color="#c8dcc8">How to use this</Pill>
+          <div style={{ ...S.card, padding: 18, marginBottom: 20, background: "rgba(24,36,46,.58)" }}>
+            <Pill color="#A8D5A2">How to use this</Pill>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, marginTop: 12 }}>
               {[
                 ["Start with the plan", "Follow the meals closely for a few days so you have a clear baseline."],
@@ -1652,24 +1671,24 @@ export default function App() {
               ].map(([title, body]) => (
                 <div key={title}>
                   <strong style={{ color: "#f8fafc", fontSize: 14 }}>{title}</strong>
-                  <p style={{ color: "#b6c4bf", fontSize: 13, lineHeight: 1.55, margin: "5px 0 0" }}>{body}</p>
+                  <p style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.55, margin: "5px 0 0" }}>{body}</p>
                 </div>
               ))}
             </div>
           </div>
           {plan.tier === "free" && (
-            <div style={{ ...S.card, padding: 22, marginBottom: 24, background: "linear-gradient(135deg,rgba(200,220,200,.08),rgba(23,34,38,.8))", border: "1px solid rgba(200,220,200,.3)" }}>
+            <div style={{ ...S.card, padding: 22, marginBottom: 24, background: "linear-gradient(135deg,rgba(168,213,162,.08),rgba(24,36,46,.8))", border: "1px solid rgba(168,213,162,.3)" }}>
               <Pill>Free preview</Pill>
               <h3 style={{ margin: "12px 0 8px", fontSize: 20 }}>You are seeing 1 day. The full plan is 7.</h3>
               <p style={{ color: "#94a3b8", margin: "0 0 16px", lineHeight: 1.65, fontSize: 14 }}>Upgrade to get your full 7-day plan, smart calorie calculation, meal swaps, and the food calculator.</p>
-              <button onClick={() => choosePlan("pro")} style={S.btn}>Get the full plan - $27</button>
+              <button onClick={() => choosePlan("pro")} style={S.btn}>Unlock Premium - $27</button>
             </div>
           )}
 
           {/* Tabs */}
           <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
             {tabs.map(t => (
-              <button key={t} onClick={() => setActiveTab(t)} style={{ flex: "1 1 80px", minWidth: 80, background: activeTab === t ? "#c8dcc8" : "rgba(23,34,38,.72)", color: activeTab === t ? "#10201d" : "#cbd5e1", border: "1px solid " + (activeTab === t ? "#c8dcc8" : "rgba(148,163,184,.16)"), borderRadius: 14, padding: "12px 8px", fontWeight: 800, cursor: "pointer", fontSize: 14, textTransform: "capitalize" }}>
+              <button key={t} onClick={() => setActiveTab(t)} style={{ flex: "1 1 80px", minWidth: 80, background: activeTab === t ? "#A8D5A2" : "rgba(24,36,46,.72)", color: activeTab === t ? "#0F1720" : "#cbd5e1", border: "1px solid " + (activeTab === t ? "#A8D5A2" : "rgba(148,163,184,.16)"), borderRadius: 14, padding: "12px 8px", fontWeight: 800, cursor: "pointer", fontSize: 14, textTransform: "capitalize" }}>
                 {t === "meals" ? "Meal Plan" : t === "workout" ? "Workouts" : "Recipes"}
               </button>
             ))}
@@ -1686,7 +1705,7 @@ export default function App() {
           {activeTab === "meals" && (<>
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, marginBottom: 20, WebkitOverflowScrolling: "touch" }}>
               {plan.days.map((d, i) => (
-                <button key={d.day} onClick={() => setOpenDay(i)} style={{ flexShrink: 0, background: openDay === i ? "#c8dcc8" : "rgba(23,34,38,.72)", color: openDay === i ? "#10201d" : "#cbd5e1", border: "1px solid " + (openDay === i ? "#c8dcc8" : "rgba(148,163,184,.16)"), borderRadius: 999, padding: "10px 16px", fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap", fontSize: 14 }}>
+                <button key={d.day} onClick={() => setOpenDay(i)} style={{ flexShrink: 0, background: openDay === i ? "#A8D5A2" : "rgba(24,36,46,.72)", color: openDay === i ? "#0F1720" : "#cbd5e1", border: "1px solid " + (openDay === i ? "#A8D5A2" : "rgba(148,163,184,.16)"), borderRadius: 999, padding: "10px 16px", fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap", fontSize: 14 }}>
                   {d.day.slice(0, 3)}{d.locked ? " 🔒" : d.isTraining ? " ⚡" : ""}
                 </button>
               ))}
@@ -1703,11 +1722,11 @@ export default function App() {
           {activeTab === "recipes" && (
             <div>
               {!hasRecipes(plan.tier) && (
-                <div style={{ ...S.card, padding: 22, marginBottom: 20, background: "linear-gradient(135deg,rgba(200,220,200,.08),rgba(23,34,38,.8))", border: "1px solid rgba(200,220,200,.3)" }}>
-                  <Pill>Pro feature</Pill>
+                <div style={{ ...S.card, padding: 22, marginBottom: 20, background: "linear-gradient(135deg,rgba(168,213,162,.08),rgba(24,36,46,.8))", border: "1px solid rgba(168,213,162,.3)" }}>
+                  <Pill>Premium feature</Pill>
                   <h3 style={{ margin: "12px 0 8px" }}>11 full recipes with instructions</h3>
-                  <p style={{ color: "#94a3b8", margin: "0 0 16px", lineHeight: 1.6, fontSize: 14 }}>Step-by-step cooking instructions for every meal type. Upgrade to Pro to unlock all recipes.</p>
-                  <button onClick={() => choosePlan("pro")} style={S.btn}>Upgrade to Pro - $27</button>
+                  <p style={{ color: "#94a3b8", margin: "0 0 16px", lineHeight: 1.6, fontSize: 14 }}>Step-by-step cooking instructions for every meal type. Unlock Premium to get all recipes.</p>
+                  <button onClick={() => choosePlan("pro")} style={S.btn}>Unlock Premium - $27</button>
                 </div>
               )}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 16 }}>
@@ -1724,13 +1743,13 @@ export default function App() {
             <div style={{ ...S.card, padding: 22, marginTop: 20 }}>
               <Pill>Locked</Pill>
               <h3 style={{ margin: "12px 0 6px" }}>Food Calculator</h3>
-              <p style={{ color: "#94a3b8", margin: "0 0 16px", lineHeight: 1.6, fontSize: 14 }}>Look up any food using the label on the package. Unlocks with Pro.</p>
-              <button onClick={() => choosePlan("pro")} style={S.btn}>Upgrade to Pro - $27</button>
+              <p style={{ color: "#94a3b8", margin: "0 0 16px", lineHeight: 1.6, fontSize: 14 }}>Look up any food using the label on the package. Unlocks with Premium.</p>
+              <button onClick={() => choosePlan("pro")} style={S.btn}>Unlock Premium - $27</button>
             </div>
           )}
 
           {/* Final results reminder */}
-          <p style={{ color: "#475569", fontSize: 12, lineHeight: 1.6, margin: "24px 0 0", padding: "14px 16px", background: "rgba(23,34,38,.5)", borderRadius: 12, border: "1px solid rgba(148,163,184,.08)" }}>
+          <p style={{ color: "#475569", fontSize: 12, lineHeight: 1.6, margin: "24px 0 0", padding: "14px 16px", background: "rgba(24,36,46,.5)", borderRadius: 12, border: "1px solid rgba(148,163,184,.08)" }}>
             This plan is a starting point, not a medical prescription. Adjust based on your body, preferences, and professional guidance.
           </p>
 
@@ -1744,4 +1763,5 @@ export default function App() {
 
   return null;
 }
+
 
