@@ -1003,25 +1003,79 @@ export default function App() {
     setPlan({ ...plan, days: updated });
   }
 
+  function buildAndOpenPlan(tier = accessTier, sourceForm = form) {
+    const mealPlan = buildMealPlan(tier, sourceForm);
+    const workouts = hasWorkouts(tier) ? buildWorkouts(sourceForm) : [];
+    workouts.forEach(w => { const idx = DAYS.indexOf(w.day); if (idx >= 0 && mealPlan.days[idx]) mealPlan.days[idx].isTraining = true; });
+    const bfp = hasBFP(tier) && sourceForm.waist && sourceForm.neck ? calcBFP(Number(sourceForm.waist), Number(sourceForm.neck), Number(sourceForm.height), sourceForm.gender, Number(sourceForm.hip) || 0) : null;
+    const newPlan = { ...mealPlan, workouts, bfp, tier };
+    setPlan(newPlan);
+    saveState({ form: sourceForm, accessTier: tier });
+    setOpenDay(0); setActiveTab("meals"); setPlanReady(true); setScreen("results");
+    return newPlan;
+  }
+
+  async function loadSavedPlanForm(currentUser = user) {
+    if (!currentUser?.id) return null;
+    try {
+      const { data, error } = await supabase
+        .from("plans")
+        .select("form_data")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+      if (error) return null;
+      return data?.form_data || null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function openPaidAccess(currentUser, tier) {
+    setAccess(tier);
+    setSelTier(tier);
+    const savedForm = await loadSavedPlanForm(currentUser);
+    if (savedForm) {
+      const mergedForm = { ...form, ...savedForm };
+      setForm(mergedForm);
+      setAgreed(true);
+      setTermsError(false);
+      buildAndOpenPlan(tier, mergedForm);
+      setAccessMsg(`Welcome back. Your ${tier.charAt(0).toUpperCase() + tier.slice(1)} plan is loaded.`);
+      return;
+    }
+    setPlan(null);
+    setPlanReady(false);
+    setAgreed(false);
+    setTermsError(false);
+    setScreen("onboarding");
+    setAccessMsg(`${tier.charAt(0).toUpperCase() + tier.slice(1)} access is active. Finish your details once to build your plan.`);
+  }
+
+  async function refreshAndOpenPaidPlan(currentUser = user) {
+    const tier = await refreshPaymentAccess(currentUser, { showMessage: true });
+    if (isPaidTier(tier)) await openPaidAccess(currentUser, tier);
+  }
+
+  async function handleAuthSuccess(u, em) {
+    setUser(u);
+    setUserEmail(em || u?.email || "");
+    setAuthModal(null);
+    await refreshAndOpenPaidPlan(u);
+  }
+
   function generate() {
     if (!agreedToTerms) { setTermsError(true); return; }
     setTermsError(false);
     if (!validate()) return;
     setGenerating(true);
     setTimeout(() => {
-      const mealPlan = buildMealPlan(accessTier, form);
-      const workouts = hasWorkouts(accessTier) ? buildWorkouts(form) : [];
-      workouts.forEach(w => { const idx = DAYS.indexOf(w.day); if (idx >= 0 && mealPlan.days[idx]) mealPlan.days[idx].isTraining = true; });
-      const bfp = hasBFP(accessTier) && form.waist && form.neck ? calcBFP(Number(form.waist), Number(form.neck), Number(form.height), form.gender, Number(form.hip) || 0) : null;
-      const newPlan = { ...mealPlan, workouts, bfp, tier: accessTier };
-      setPlan(newPlan);
-      saveState({ form, accessTier });
-      setOpenDay(0); setActiveTab("meals"); setGenerating(false); setPlanReady(true); setScreen("results");
+      buildAndOpenPlan(accessTier, form);
+      setGenerating(false);
     }, 800);
   }
 
   async function savePlanToSupabase() {
-    if (!user) { setAuthModal("signup"); return; }
+    if (!user) { setAuthModal("login"); return; }
     setSavingPlan(true); setSaveMsg("");
     try {
       const payload = { user_id: user.id, tier: accessTier, form_data: form, plan_summary: { cal: plan.cal, protein: plan.protein, carbs: plan.carbs, fat: plan.fat }, updated_at: new Date().toISOString() };
@@ -1053,11 +1107,11 @@ export default function App() {
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <span style={{ color: "#b6c4bf", fontSize: 12 }}>{userEmail}</span>
                 {isPaid(accessTier) && <Pill color="#edf7ef">{accessTier.charAt(0).toUpperCase() + accessTier.slice(1)} active</Pill>}
-                <button onClick={() => refreshPaymentAccess(user, { showMessage: true })} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13, opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>{checkingAccess ? "Checking..." : "Refresh access"}</button>
+                <button onClick={() => refreshAndOpenPaidPlan(user)} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13, opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>{checkingAccess ? "Checking..." : "Refresh access"}</button>
                 <button onClick={handleSignOut} style={{ ...S.sec, padding: "8px 14px", borderRadius: 999, fontSize: 13 }}>Sign out</button>
               </div>
             ) : (
-              <button onClick={() => setAuthModal("signup")} style={S.authBtn}>Sign up / log in</button>
+              <button onClick={() => setAuthModal("login")} style={S.authBtn}>Sign up / log in</button>
             )}
           </div>
         </header>
@@ -1346,7 +1400,7 @@ export default function App() {
       {!authModal && !legalModal && !(user && isPaid(accessTier)) && <StickyHomeCTA onStart={() => choosePlan("pro")} onPreview={() => choosePlan("free")} />}
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
       {!authModal && !legalModal && <EmailCapturePopup onStart={() => choosePlan("pro")} />}
-      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); refreshPaymentAccess(u, { showMessage: true }); }} />}
+      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={handleAuthSuccess} />}
     </div>
   );
 
@@ -1390,20 +1444,20 @@ export default function App() {
           {user ? (
             <div style={{ display: "grid", gap: 10 }}>
               <div style={{ color: "#b6c4bf", fontSize: 12 }}>Signed in as {userEmail}</div>
-              <button onClick={() => refreshPaymentAccess(user, { showMessage: true })} style={{ ...S.btn, width: "100%", opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>
+              <button onClick={() => refreshAndOpenPaidPlan(user)} style={{ ...S.btn, width: "100%", opacity: checkingAccess ? 0.7 : 1 }} disabled={checkingAccess}>
                 {checkingAccess ? "Checking payment..." : "Check payment / refresh access"}
               </button>
               {accessMsg && <p style={{ color: accessMsg.includes("active") ? "#edf7ef" : "#e9f3ef", fontSize: 13, margin: 0, lineHeight: 1.5 }}>{accessMsg}</p>}
               {isPaid(accessTier) && <button onClick={() => setScreen("onboarding")} style={{ ...S.sec, width: "100%", borderColor: "rgba(200,220,200,.35)", color: "#f8fafc" }}>Continue with {accessTier.charAt(0).toUpperCase() + accessTier.slice(1)}</button>}
             </div>
           ) : (
-            <button onClick={() => setAuthModal("signup")} style={{ ...S.authBtn, width: "100%", borderRadius: 14, padding: "14px 18px" }}>Create account / log in to activate access</button>
+            <button onClick={() => setAuthModal("login")} style={{ ...S.authBtn, width: "100%", borderRadius: 14, padding: "14px 18px" }}>Sign in / create account to activate access</button>
           )}
           <p style={{ color: "#475569", fontSize: 11, textAlign: "center", margin: "12px 0 0", lineHeight: 1.55 }}>Need help? Email {SUPPORT_EMAIL} with your PayPal receipt and the email you used at checkout.</p>
         </div>
       </div>
       <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
-      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); refreshPaymentAccess(u, { showMessage: true }); }} />}
+      {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={handleAuthSuccess} />}
     </div>
   );
 
@@ -1557,7 +1611,7 @@ export default function App() {
                   </button>
                 </>
               ) : (
-                <button onClick={() => setAuthModal("signup")} style={{ ...S.sec, padding: "8px 16px", fontSize: 13 }}>Save to account</button>
+                <button onClick={() => setAuthModal("login")} style={{ ...S.sec, padding: "8px 16px", fontSize: 13 }}>Save to account</button>
               )}
             </div>
           </div>
@@ -1683,7 +1737,7 @@ export default function App() {
           <LegalFooter onOpen={setLegalModal} />
         </div>
         <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />
-        {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={(u, em) => { setUser(u); setUserEmail(em); setAuthModal(null); refreshPaymentAccess(u, { showMessage: true }); }} />}
+        {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSuccess={handleAuthSuccess} />}
       </div>
     );
   }
