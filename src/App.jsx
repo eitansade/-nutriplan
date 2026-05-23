@@ -40,6 +40,7 @@ const LAUNCH_TIMER_KEY = STORAGE_KEY + "_launch_deadline";
 const EMAIL_CAPTURE_KEY = STORAGE_KEY + "_email_offer_seen";
 const SUPPORT_EMAIL = "hello.nutriplan@gmail.com";
 const TIKTOK_PIXEL_ID = import.meta.env.VITE_TIKTOK_PIXEL_ID;
+const HERO_FITNESS_IMG = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1800&q=82";
 
 const PAYPAL = {
   basic: "https://www.paypal.com/ncp/payment/XDWATET936BTS",
@@ -1139,17 +1140,39 @@ export default function App() {
             <button onClick={() => setScreen("onboarding")} style={{ ...S.btn, padding: "10px 16px", fontSize: 13 }}>Build my plan</button>
           </div>
         )}
-        <LaunchBanner />
-        <section style={{ textAlign: "center", marginBottom: 40, paddingTop: 12 }}>
-          <h1 style={{ fontSize: "clamp(34px,8vw,80px)", lineHeight: 0.93, letterSpacing: -3, margin: "0 auto 20px", maxWidth: 860 }}>
-            Eat better. Look better. Stay consistent.
-          </h1>
-          <p style={{ color: "#94a3b8", fontSize: 18, lineHeight: 1.65, maxWidth: 600, margin: "0 auto 30px" }}>
-            Real nutrition for real life: high-protein meal plans, flexible structure, and sustainable fat-loss habits for people who want healthy living without punishment.
-          </p>
-          <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 36px", fontSize: 17 }}>Build My Plan - $27</button>
-          <div style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>One-time founding checkout. Or try the free preview below.</div>
+        <section className="np-rise" style={{ minHeight: "min(640px, calc(100vh - 120px))", margin: "0 0 34px", borderRadius: 30, overflow: "hidden", position: "relative", display: "grid", alignItems: "end", padding: "clamp(28px,6vw,64px)", backgroundImage: `linear-gradient(90deg,rgba(15,23,32,.92),rgba(15,23,32,.72) 46%,rgba(15,23,32,.28)),url(${HERO_FITNESS_IMG})`, backgroundSize: "cover", backgroundPosition: "center", border: "1px solid rgba(168,213,162,.18)", boxShadow: "0 28px 80px rgba(0,0,0,.34)" }}>
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(15,23,32,.72),rgba(15,23,32,0) 52%)", pointerEvents: "none" }} />
+          <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))", gap: 28, alignItems: "end" }}>
+            <div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 18 }}>
+                {["Real food", "Fitness lifestyle", "No punishment"].map(t => <Pill key={t} color="#F5F1E8">{t}</Pill>)}
+              </div>
+              <h1 style={{ fontSize: "clamp(42px,8vw,88px)", lineHeight: 0.92, letterSpacing: -3, margin: "0 0 20px", maxWidth: 760 }}>
+                Eat better. Look better. Stay consistent.
+              </h1>
+              <p style={{ color: "#DCE5DF", fontSize: "clamp(16px,2.4vw,20px)", lineHeight: 1.65, maxWidth: 620, margin: "0 0 28px" }}>
+                Real nutrition for real life: high-protein meal plans, flexible structure, and sustainable fat-loss habits for people who want healthy living without punishment.
+              </p>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <button onClick={() => choosePlan("pro")} style={{ ...S.btn, padding: "16px 32px", fontSize: 16 }}>Unlock Premium - $27</button>
+                <button onClick={() => choosePlan("free")} style={{ ...S.sec, padding: "15px 22px", fontSize: 14, background: "rgba(15,23,32,.58)" }}>Try free preview</button>
+              </div>
+            </div>
+            <div style={{ borderRadius: 22, padding: 18, background: "rgba(15,23,32,.64)", border: "1px solid rgba(245,241,232,.18)", backdropFilter: "blur(14px)" }}>
+              <div style={{ color: "#D6B36A", fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 8 }}>Founding offer</div>
+              <div style={{ color: "#F8FAFC", fontSize: 26, fontWeight: 900, marginBottom: 4 }}>Premium $27</div>
+              <div style={{ color: "#B8C4CC", fontSize: 13, lineHeight: 1.6, marginBottom: 14 }}>One clear paid plan. One-time checkout. No fake monthly billing.</div>
+              <div style={{ display: "grid", gap: 8 }}>
+                {["7-day meal structure", "Meal swaps + recipes", "Food calculator"].map(item => (
+                  <div key={item} style={{ display: "flex", gap: 8, alignItems: "center", color: "#F5F1E8", fontSize: 13, fontWeight: 800 }}>
+                    <span style={{ color: "#A8D5A2" }}>✓</span>{item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
+        <LaunchBanner />
 
         {/* TikTok visitor bridge */}
         <div className="np-rise" style={{ ...S.card, padding: "18px 20px", marginBottom: 34, background: "linear-gradient(135deg,rgba(168,213,162,.1),rgba(58,78,74,.56))", border: "1px solid rgba(168,213,162,.24)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 18, alignItems: "center" }}>
